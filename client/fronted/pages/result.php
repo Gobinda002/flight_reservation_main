@@ -1,3 +1,23 @@
+<?php
+session_start();
+require_once '../../../db.php';
+
+// Get search inputs
+$origin = $_GET['from'] ?? '';
+$destination = $_GET['to'] ?? '';
+$depart = $_GET['depart'] ?? '';
+
+// Fetch matching flights
+$sql = "SELECT * FROM flights 
+        WHERE origin = ? 
+        AND destination = ? 
+        AND DATE(departure_time) = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sss", $origin, $destination, $depart);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +31,7 @@
 
     <?php include '../components/navbar.php'; ?>
 
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-40 overflow-hidden px-6 py-8 flex flex-col md:flex-row gap-6">
+    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-10 overflow-hidden px-6 py-8 flex flex-col md:flex-row gap-6">
 
       <!-- Sidebar search -->
       <div class="md:w-1/4 bg-white rounded-xl p-6 shadow">
@@ -77,10 +97,19 @@
       </div>
 
       <!-- Results list placeholder -->
-      <div class="flex-1 bg-gray-50 rounded-xl p-6 shadow">
-        <h2 class="text-lg font-semibold mb-4">Flight Results Placeholder</h2>
-        <p>Add your flight result cards here.</p>
-      </div>
+     <div class="flex-1 bg-gray-50 rounded-xl p-6 shadow">
+    <h2 class="text-lg font-semibold mb-4">Flight Results</h2>
+
+    <?php if ($result->num_rows > 0): ?>
+        <?php while ($flight = $result->fetch_assoc()): ?>
+            <?php include '../components/flight_card.php'; ?>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <div class="bg-white shadow-lg rounded-lg p-6 text-center">
+            <p class="text-gray-600 font-medium">No flights found for your search.</p>
+        </div>
+    <?php endif; ?>
+</div>
 
     </div>
   </div>
