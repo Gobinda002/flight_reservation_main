@@ -2,20 +2,37 @@
 session_start();
 require_once '../../../db.php';
 
+$sql = "SELECT f.*, a.airline_name
+        FROM flights f
+        JOIN airlines a ON f.airline_id = a.airline_id";
+$result = $conn->query($sql);
+
+$flights = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $flights[] = $row;
+    }
+}
+
+
 // Get search inputs
 $origin = $_GET['from'] ?? '';
 $destination = $_GET['to'] ?? '';
 $depart = $_GET['depart'] ?? '';
 
 // Fetch matching flights
-$sql = "SELECT * FROM flights 
-        WHERE origin = ? 
-        AND destination = ? 
-        AND DATE(departure_time) = ?";
+// Fetch matching flights with airline name
+$sql = "SELECT f.*, a.airline_name
+        FROM flights f
+        JOIN airlines a ON f.airline_id = a.airline_id
+        WHERE f.origin = ? 
+        AND f.destination = ? 
+        AND DATE(f.departure_time) = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $origin, $destination, $depart);
 $stmt->execute();
 $result = $stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +41,7 @@ $result = $stmt->get_result();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Flight Search Summary</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
   <div class="min-h-screen bg-gradient-to-br from-teal-500 via-white/5 to-green-400 relative overflow-hidden">
