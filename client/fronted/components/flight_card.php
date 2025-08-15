@@ -14,7 +14,7 @@ $seatsLeft = $flight['total_seats'] - $flight['booked_seats'];
                 <span>-</span>
                 <span><?= htmlspecialchars($flight['destination']) ?></span>
             </div>
-            <p class="text-gray-500 text-sm"><?= htmlspecialchars($flight['airline_name']) ?></p>
+            <p class="text-gray-500 text-sm "><?= strtoupper(htmlspecialchars($flight['airline_name'])) ?></p>
         </div>
         <div class="ml-6">
             <p class="font-bold text-lg"><?= date('H:i', strtotime($flight['departure_time'])) ?></p>
