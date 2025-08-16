@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="email" name="passenger_email" required class="w-full border rounded px-3 py-2">
         </div>
         <div>
-            <label class="block font-medium">Phone (10 digits)</label>
+            <label class="block font-medium">Phone</label>
             <input type="tel" name="passenger_phone" required pattern="[0-9]{10}" maxlength="10"
                    class="w-full border rounded px-3 py-2"
                    title="Phone number must be exactly 10 digits">

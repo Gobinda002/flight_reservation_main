@@ -1,4 +1,4 @@
-
+<?php session_start(); ?>
 
 <nav class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-md text-black text-sm px-6 py-4 cursor-pointer">
   <div class="flex justify-between items-center">
@@ -54,20 +54,17 @@
   const userDropdown = document.getElementById('userDropdown');
   
   if (userMenuBtn && userDropdown) {
-    // Toggle dropdown when username is clicked
     userMenuBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       userDropdown.classList.toggle('hidden');
     });
     
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
       if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
         userDropdown.classList.add('hidden');
       }
     });
     
-    // Close dropdown when pressing Escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         userDropdown.classList.add('hidden');
