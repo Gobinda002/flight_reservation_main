@@ -27,10 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $origin = trim($_POST['origin'] ?? '');
     $destination = trim($_POST['destination'] ?? '');
     $departure_time = $_POST['departure_time'] ?? '';
+    $arrival_time = $_POST['arrival_time'] ?? '';
     $total_seats = (int)($_POST['total_seats'] ?? 0);
+    $price = (int)($_POST['price'] ?? 0);
 
-    if (!$plane_id || !$origin || !$destination || !$departure_time || $total_seats <= 0) {
-        $error = "All fields are required and seats must be positive.";
+    if (!$plane_id || !$origin || !$destination || !$departure_time || !$arrival_time || $total_seats <= 0 || $price <= 0) {
+        $error = "All fields are required, and seats/price must be positive.";
+    } elseif (strtotime($arrival_time) <= strtotime($departure_time)) {
+        $error = "Arrival time must be later than departure time.";
     } else {
         // Check if same plane already has flight at the same departure time
         $stmtCheck = $conn->prepare("SELECT * FROM flights WHERE plane_id = ? AND departure_time = ?");
@@ -41,11 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($resultCheck->num_rows > 0) {
             $error = "This plane already has a flight scheduled at this time!";
         } else {
-            $stmt = $conn->prepare("INSERT INTO flights (plane_id,airline_id, origin, destination, departure_time, total_seats) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("iisssi", $plane_id, $airline_id, $origin, $destination, $departure_time, $total_seats);
+            $stmt = $conn->prepare("INSERT INTO flights 
+                (plane_id, airline_id, origin, destination, departure_time, arrival_time, total_seats, price, booked_seats) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
+            $stmt->bind_param("iissssii", $plane_id, $airline_id, $origin, $destination, $departure_time, $arrival_time, $total_seats, $price);
 
             if ($stmt->execute()) {
                 $success = "Flight added successfully.";
+                $_POST = []; // clear form
             } else {
                 $error = "Database error: " . $stmt->error;
             }
@@ -79,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <form method="post" class="space-y-5" autocomplete="off">
+    <form method="post" class="space-y-5" autocomplete="off" id="flightForm">
 
         <div>
             <label for="airline" class="block mb-1 font-semibold text-gray-700">Airline</label>
@@ -119,8 +126,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div>
+            <label for="arrival_time" class="block mb-1 font-semibold text-gray-700">Arrival Time</label>
+            <input type="datetime-local" name="arrival_time" id="arrival_time" required
+                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
             <label for="total_seats" class="block mb-1 font-semibold text-gray-700">Total Seats</label>
             <input type="number" name="total_seats" id="total_seats" min="1" required
+                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+            <label for="price" class="block mb-1 font-semibold text-gray-700">Price</label>
+            <input type="number" name="price" id="price" min="1" required
                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
@@ -171,12 +190,24 @@ if(alertBox){
     setTimeout(()=>{ alertBox.style.display='none'; }, 3000);
 }
 
-// Prevent past dates
+// Prevent past dates + validate arrival > departure
 window.addEventListener('DOMContentLoaded', () => {
     const departureInput = document.getElementById('departure_time');
+    const arrivalInput = document.getElementById('arrival_time');
+    const form = document.getElementById('flightForm');
+
     const now = new Date();
     const pad = num => num < 10 ? '0'+num : num;
     departureInput.min = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    form.addEventListener('submit', e => {
+        const dep = new Date(departureInput.value);
+        const arr = new Date(arrivalInput.value);
+        if (arr <= dep) {
+            e.preventDefault();
+            alert("Arrival time must be later than departure time.");
+        }
+    });
 });
 </script>
 </body>
