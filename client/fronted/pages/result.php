@@ -22,9 +22,10 @@ $depart = $_GET['depart'] ?? '';
 
 // Fetch matching flights
 // Fetch matching flights with airline name
-$sql = "SELECT f.*, a.airline_name
+$sql = "SELECT f.*, a.airline_name, p.plane_number
         FROM flights f
         JOIN airlines a ON f.airline_id = a.airline_id
+        JOIN planes p ON f.plane_id = p.plane_id
         WHERE f.origin = ? 
         AND f.destination = ? 
         AND DATE(f.departure_time) = ?";
@@ -32,6 +33,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $origin, $destination, $depart);
 $stmt->execute();
 $result = $stmt->get_result();
+
 
 ?>
 

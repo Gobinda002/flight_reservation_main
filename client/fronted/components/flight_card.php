@@ -78,7 +78,7 @@ if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
             <?php endif; ?>
         </div>
         <button onclick="document.getElementById('<?= $modalId ?>').classList.remove('hidden')"
-                class="text-blue-500 font-semibold text-sm">
+            class="text-blue-500 font-semibold text-sm">
             View Details
         </button>
     </div>
@@ -88,13 +88,13 @@ if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
 <div id="<?= $modalId ?>" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-lg p-6 w-96 relative">
         <button onclick="document.getElementById('<?= $modalId ?>').classList.add('hidden')"
-                class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+            class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
         <h2 class="text-xl font-bold mb-4"><?= htmlspecialchars($flight['airline_name']) ?></h2>
 
         <!-- ✅ Fixed Plane Number -->
-        <p><strong>Plane Number:</strong> <?= htmlspecialchars($flight['plane_number'] ?? 'N/A') ?></p>
+        <p><strong>Plane Number:</strong> <?= htmlspecialchars(strtoupper($flight['plane_number'] ?? 'N/A')) ?></p>
         <p><strong>Luggage:</strong> 15 kg</p>
-       <p><strong>Duration:</strong> <?= $duration ?></p>
+        <p><strong>Duration:</strong> <?= $duration ?></p>
         <p><strong>Departure:</strong> <?= date('j M, H:i', strtotime($flight['departure_time'])) ?></p>
         <p><strong>Arrival:</strong> <?= date('j M, H:i', strtotime($flight['arrival_time'])) ?></p>
         <p class="text-red-500"><strong>Non-Refundable</strong></p>

@@ -36,31 +36,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strtotime($arrival_time) <= strtotime($departure_time)) {
         $error = "Arrival time must be later than departure time.";
     } else {
-        // Check if same plane already has flight at the same departure time
-        $stmtCheck = $conn->prepare("SELECT * FROM flights WHERE plane_id = ? AND departure_time = ?");
-        $stmtCheck->bind_param("is", $plane_id, $departure_time);
-        $stmtCheck->execute();
-        $resultCheck = $stmtCheck->get_result();
 
-        if ($resultCheck->num_rows > 0) {
-            $error = "This plane already has a flight scheduled at this time!";
+        // ✅ Fetch plane capacity
+        $stmtCapacity = $conn->prepare("SELECT capacity FROM planes WHERE plane_id = ?");
+        $stmtCapacity->bind_param("i", $plane_id);
+        $stmtCapacity->execute();
+        $resultCapacity = $stmtCapacity->get_result();
+        $planeData = $resultCapacity->fetch_assoc();
+        $stmtCapacity->close();
+
+        if (!$planeData) {
+            $error = "Selected plane does not exist.";
+        } elseif ($total_seats > (int)$planeData['capacity']) {
+            $error = "Total seats cannot exceed plane capacity of " . $planeData['capacity'] . ".";
         } else {
-            $stmt = $conn->prepare("INSERT INTO flights 
-                (plane_id, airline_id, origin, destination, departure_time, arrival_time, total_seats, price, booked_seats) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
-            $stmt->bind_param("iissssii", $plane_id, $airline_id, $origin, $destination, $departure_time, $arrival_time, $total_seats, $price);
 
-            if ($stmt->execute()) {
-                $success = "Flight added successfully.";
-                $_POST = []; // clear form
+            // Check if same plane already has flight at the same departure time
+            $stmtCheck = $conn->prepare("SELECT * FROM flights WHERE plane_id = ? AND departure_time = ?");
+            $stmtCheck->bind_param("is", $plane_id, $departure_time);
+            $stmtCheck->execute();
+            $resultCheck = $stmtCheck->get_result();
+
+            if ($resultCheck->num_rows > 0) {
+                $error = "This plane already has a flight scheduled at this time!";
             } else {
-                $error = "Database error: " . $stmt->error;
+                $stmt = $conn->prepare("INSERT INTO flights 
+                    (plane_id, airline_id, origin, destination, departure_time, arrival_time, total_seats, price, booked_seats) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
+                $stmt->bind_param("iissssii", $plane_id, $airline_id, $origin, $destination, $departure_time, $arrival_time, $total_seats, $price);
+
+                if ($stmt->execute()) {
+                    $success = "Flight added successfully.";
+                    $_POST = []; // clear form
+                } else {
+                    $error = "Database error: " . $stmt->error;
+                }
+                $stmt->close();
             }
-            $stmt->close();
+            $stmtCheck->close();
         }
-        $stmtCheck->close();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
