@@ -1,5 +1,5 @@
 
-<?php session_start(); ?>
+
 <nav class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-md text-black text-sm px-6 py-4 cursor-pointer">
   <div class="flex justify-between items-center">
     <div class="flex items-center space-x-2">
