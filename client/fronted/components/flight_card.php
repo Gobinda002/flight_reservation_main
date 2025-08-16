@@ -5,6 +5,16 @@ if (!isset($flight) || !is_array($flight)) {
 
 $seatsLeft = $flight['total_seats'] - $flight['booked_seats'];
 $modalId = "flightModal" . $flight['flight_id']; // Unique ID for each flight
+
+// for the duration 
+if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
+    $depTime = new DateTime($flight['departure_time']);
+    $arrTime = new DateTime($flight['arrival_time']);
+    $interval = $depTime->diff($arrTime);
+    $duration = $interval->format('%h hrs %i mins');
+} else {
+    $duration = 'N/A';
+}
 ?>
 
 <div class="bg-white rounded-xl shadow p-4 mb-4 transition-transform transform hover:scale-[1.02] flex flex-col">
@@ -80,13 +90,13 @@ $modalId = "flightModal" . $flight['flight_id']; // Unique ID for each flight
         <button onclick="document.getElementById('<?= $modalId ?>').classList.add('hidden')"
                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
         <h2 class="text-xl font-bold mb-4"><?= htmlspecialchars($flight['airline_name']) ?></h2>
+
+        <!-- ✅ Fixed Plane Number -->
         <p><strong>Plane Number:</strong> <?= htmlspecialchars($flight['plane_number'] ?? 'N/A') ?></p>
-        <?php if (!empty($flight['non_refundable'])): ?>
-            <p><strong>Non-Refundable</strong></p>
-        <?php endif; ?>
-        <p><strong>Luggage:</strong> <?= htmlspecialchars($flight['luggage'] ?? 'Standard') ?></p>
-        <p><strong>Duration:</strong> <?= htmlspecialchars($flight['duration'] ?? 'N/A') ?></p>
+        <p><strong>Luggage:</strong> 15 kg</p>
+       <p><strong>Duration:</strong> <?= $duration ?></p>
         <p><strong>Departure:</strong> <?= date('j M, H:i', strtotime($flight['departure_time'])) ?></p>
         <p><strong>Arrival:</strong> <?= date('j M, H:i', strtotime($flight['arrival_time'])) ?></p>
+        <p class="text-red-500"><strong>Non-Refundable</strong></p>
     </div>
 </div>
