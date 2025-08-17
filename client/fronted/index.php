@@ -1,5 +1,6 @@
-<?
-require_once '../backend/db.php';
+<?php
+session_start();
+require_once '../../db.php';
 ?>
 
 <!DOCTYPE html>
@@ -30,28 +31,19 @@ require_once '../backend/db.php';
 
       <div class="w-full flex justify-end pr-10 mt-32">
         <div class="text-right max-w-xs">
-          <?php if (isset($_SESSION['user'])): ?>
-            <p class="text-sm font-semibold mb-4 ">Discover Exclusive Deals On Premium And First-Class Flights For Your Ultimate Travel Experience.
-            </p>
-            <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
-              Continue Your Journey
-            </button>
-          <?php else: ?>
-            <p class="text-sm font-semibold mb-4">
-              Discover Exclusive Deals On Premium And First-Class Flights For
-              Your Ultimate Travel Experience.
-            </p>
-            <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
-              Start Your Journey
-            </button>
-          <?php endif; ?>
+          <p class="text-sm font-semibold mb-4 ">Discover Exclusive Deals On Premium And First-Class Flights For Your
+            Ultimate Travel Experience.</p>
+          <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
+            Start Your Journey
+          </button>
         </div>
       </div>
-
-      <img src="assets/plane.png" alt="Airplane"
-        class="absolute top-[80%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60rem] z-10" />
-
     </div>
+
+    <img src="assets/plane.png" alt="Airplane"
+      class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60rem] z-10" />
+
+  </div>
   </div>
 
   <!-- Search Section -->
