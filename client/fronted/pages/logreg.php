@@ -4,7 +4,7 @@ session_start();
 // Include database connection
 require_once '../../../db.php';
 
-k
+
 $errors = [];
 $success = '';
 $showForm = 'login';
