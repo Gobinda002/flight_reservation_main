@@ -2,6 +2,7 @@
 session_start();
 $isLoggedIn = isset($_SESSION['username']);
 require_once '../../db.php';
+include '../components/navbar.php';
 
 $sql = "SELECT f.*, a.airline_name
         FROM flights f
@@ -48,10 +49,7 @@ $result = $stmt->get_result();
 </head>
 <body>
   <div class="min-h-screen bg-gradient-to-br from-teal-500 via-white/5 to-green-400 relative overflow-hidden">
-
-    <?php include '../components/navbar.php'; ?>
-
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-10 overflow-hidden px-6 py-8 flex flex-col md:flex-row gap-6">
+    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-20 overflow-hidden px-6 py-20 flex flex-col md:flex-row gap-6">
 
       <!-- Sidebar search -->
       <div class="md:w-1/4 bg-white rounded-xl p-6 shadow">
@@ -148,7 +146,7 @@ $result = $stmt->get_result();
         confirmButtonColor: "#3085d6"
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "pages/auth.php";  // 👉 your login/register page
+          window.location.href = "logreg.php"; 
         }
       });
     } else {
