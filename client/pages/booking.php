@@ -23,6 +23,10 @@ if (!isset($_GET['flight_id'])) {
 
 $flight_id = intval($_GET['flight_id']);
 
+// ✅ Get selected seats from index.php (if provided)
+$selectedSeats = isset($_GET['seats']) ? intval($_GET['seats']) : 1;
+if ($selectedSeats < 1) $selectedSeats = 1;
+
 // Fetch flight details
 $stmt = $conn->prepare("SELECT f.*, a.airline_name, p.plane_number 
                         FROM flights f 
@@ -42,7 +46,7 @@ $flight = $result->fetch_assoc();
 
 // Handle booking submission
 $bookingSuccess = false;
-$message = '';
+$errorSeats = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $passenger_name = trim($_POST['passenger_name']);
     $passenger_email = trim($_POST['passenger_email']);
@@ -51,17 +55,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate phone number (10 digits)
     if (!preg_match('/^\d{10}$/', $passenger_phone)) {
-        $message = "Phone number must be exactly 10 digits.";
+        echo "<script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Phone',
+                text: 'Phone number must be exactly 10 digits.'
+            });
+        </script>";
     } else {
-        $stmt = $conn->prepare("INSERT INTO bookings (user_id, flight_id, passenger_phone, seats_booked) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisss", $user_id, $flight_id, $passenger_phone, $seats_booked);
-
-        if ($stmt->execute()) {
-            // Update booked seats
-            $conn->query("UPDATE flights SET booked_seats = booked_seats + $seats_booked WHERE flight_id = $flight_id");
-            $bookingSuccess = true;
+        // ✅ Check available seats
+        $availableSeats = $flight['total_seats'] - $flight['booked_seats'];
+        if ($seats_booked > $availableSeats) {
+            $errorSeats = true; // mark error for SweetAlert
         } else {
-            $message = "Error: " . $conn->error;
+            // Insert booking
+            $stmt = $conn->prepare("INSERT INTO bookings 
+                (user_id, flight_id, passenger_name, passenger_email, passenger_phone, seats, booking_date) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())");
+
+            $stmt->bind_param(
+                "iisssi",
+                $user_id,
+                $flight_id,
+                $passenger_name,
+                $passenger_email,
+                $passenger_phone,
+                $seats_booked
+            );
+
+            if ($stmt->execute()) {
+                // Update booked seats in flights
+                $update = $conn->prepare("UPDATE flights SET booked_seats = booked_seats + ? WHERE flight_id = ?");
+                $update->bind_param("ii", $seats_booked, $flight_id);
+                $update->execute();
+
+                $bookingSuccess = true;
+            }
         }
     }
 }
@@ -92,9 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p><strong>Departure:</strong> <?= date('j M, H:i', strtotime($flight['departure_time'])) ?></p>
             <p><strong>Arrival:</strong> <?= date('j M, H:i', strtotime($flight['arrival_time'])) ?></p>
             <p><strong>Price per seat:</strong> $<?= number_format($flight['price'], 2) ?></p>
+           
         </div>
-
-
 
         <!-- Booking Form -->
         <?php if (!$bookingSuccess): ?>
@@ -111,12 +139,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div>
                     <label class="block font-medium">Phone</label>
-                    <input type="tel" name="passenger_phone" required pattern="[0-9]{10}" maxlength="10 "  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                        class="w-full border rounded px-3 py-2" title="Phone number must be exactly 10 digits">
+                    <input type="tel" name="passenger_phone" required pattern="[0-9]{10}" maxlength="10"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded px-3 py-2"
+                        title="Phone number must be exactly 10 digits">
                 </div>
                 <div>
                     <label class="block font-medium">Seats to Book</label>
-                    <input type="number" name="seats_booked" min="1" value="1" required
+                    <input type="number" name="seats_booked" min="1" value="<?= $selectedSeats ?>" required
                         class="w-full border rounded px-3 py-2">
                 </div>
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Confirm Booking</button>
@@ -134,7 +163,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = 'my_bookings.php';
+                    } else {
+                        window.location.href = '../index.php';
                     }
+                });
+            </script>
+        <?php endif; ?>
+
+        <?php if ($errorSeats): ?>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Not Enough Seats!',
+                    text: 'Sorry, only <?= $flight['total_seats'] - $flight['booked_seats'] ?> seats are available.',
+                    confirmButtonText: 'OK'
                 });
             </script>
         <?php endif; ?>

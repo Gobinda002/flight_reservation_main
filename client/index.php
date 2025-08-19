@@ -92,7 +92,7 @@ require_once '../db.php';
 
           <div class="md:col-span-2">
             <label class="block text-xs mb-1">Passenger</label>
-            <input type="number" name="passengers" min="1" value="1"
+            <input type="number" name="passengers" min="1" value="<?= $selectedSeats ?>" required
               class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
           </div>
 

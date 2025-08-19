@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../db.php';
+include '../components/navbar.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['username'])) {
@@ -32,9 +33,9 @@ $result = $stmt->get_result();
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body>
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl mx-auto p-6">
 
     <h1 class="text-2xl font-bold mb-6">My Bookings</h1>
 
@@ -47,8 +48,8 @@ $result = $stmt->get_result();
                 <p><strong>From:</strong> <?= htmlspecialchars($booking['origin']) ?> <strong>To:</strong> <?= htmlspecialchars($booking['destination']) ?></p>
                 <p><strong>Departure:</strong> <?= date('j M, H:i', strtotime($booking['departure_time'])) ?></p>
                 <p><strong>Arrival:</strong> <?= date('j M, H:i', strtotime($booking['arrival_time'])) ?></p>
-                <p><strong>Seats Booked:</strong> <?= intval($booking['seats_booked']) ?></p>
-                <p><strong>Total Paid:</strong> $<?= number_format($booking['seats_booked'] * $booking['price'], 2) ?></p>
+                <p><strong>Seats Booked:</strong> <?= intval($booking['seats']) ?></p>
+                <p><strong>Total Paid:</strong> $<?= number_format(intval($booking['seats']) * floatval($booking['price']), 2) ?></p>
 
                 <button onclick="downloadPDF(<?= $booking['booking_id'] ?>)" class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded">
                     Download PDF

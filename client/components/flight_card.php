@@ -62,11 +62,12 @@ if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
         <div class="text-center">
             <p class="font-bold text-xl">$<?= htmlspecialchars(number_format($flight['price'], 2)) ?></p>
 
-            <button onclick="handleBooking(<?= $flight['flight_id'] ?>)"
+            <a href="booking.php?flight_id=<?= $flight['flight_id'] ?>&seats=<?= htmlspecialchars($_GET['passengers'] ?? 1) ?>"
                 class="mt-2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm hover:bg-blue-600 transition">
-                Select
-            </button>
+                Book
+            </a>
         </div>
+
 
     </div>
 
