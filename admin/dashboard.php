@@ -3,7 +3,7 @@ session_start();
 require '../db.php'; // path to your mysqli connection file
 
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit;
 }
 

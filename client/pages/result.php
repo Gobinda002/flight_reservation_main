@@ -48,8 +48,8 @@ $result = $stmt->get_result();
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-  <div class="min-h-screen bg-gradient-to-br from-teal-500 via-white/5 to-green-400 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-20 overflow-hidden px-6 py-20 flex flex-col md:flex-row gap-6">
+<div class="min-h-screen bg-gradient-to-br from-teal-500 via-white/5 to-green-400 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow mt-20 overflow-hidden px-6 pt-12 pb-20 flex flex-col md:flex-row gap-6">
 
       <!-- Sidebar search -->
       <div class="md:w-1/4 bg-white rounded-xl p-6 shadow">
