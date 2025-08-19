@@ -1,14 +1,14 @@
 <nav class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-md text-black text-sm px-6 py-4 cursor-pointer">
   <div class="flex justify-between items-center">
     <div class="flex items-center space-x-2">
-      <img src="assets/logo.png" alt="Fly High Logo" class="h-8 w-auto" />
+      <img src="/flight_reservation_main/client/assets/logo.png" alt="Fly High Logo" class="h-8 w-auto" />
       <span>Fly High</span>
     </div>
 
     <ul class="hidden md:flex space-x-6">
-      <li><a href="../index.php">Home</a></li>
+      <li><a href="/flight_reservation_main/client/index.php">Home</a></li>
       <li><a href="#">About</a></li>
-      <li><a href="pages/mybooking.php">My Bookings</a></li>
+      <li><a href="/flight_reservation_main/client/pages/mybooking.php">My Bookings</a></li>
       <li><a href="#">Customer Supports</a></li>
     </ul>
 

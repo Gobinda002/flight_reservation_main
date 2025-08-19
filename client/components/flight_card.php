@@ -4,7 +4,11 @@ if (!isset($flight) || !is_array($flight)) {
 }
 
 $seatsLeft = $flight['total_seats'] - $flight['booked_seats'];
-$modalId = "flightModal" . $flight['flight_id']; // Unique ID for each flight
+
+// Only show the card if seats are available
+if ($seatsLeft <= 0) {
+    return;
+}
 
 // for the duration 
 if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
@@ -16,6 +20,7 @@ if (!empty($flight['departure_time']) && !empty($flight['arrival_time'])) {
     $duration = 'N/A';
 }
 ?>
+
 
 <div class="bg-white rounded-xl shadow p-4 mb-4 transition-transform transform hover:scale-[1.02] flex flex-col">
     <!-- Top Section: Flight Info -->
