@@ -1,5 +1,6 @@
 <?php
 session_start();
+$isLoggedIn = isset($_SESSION['username']);
 require_once '../../db.php';
 
 $sql = "SELECT f.*, a.airline_name
@@ -132,5 +133,30 @@ $result = $stmt->get_result();
 
     </div>
   </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const isLoggedIn = <?php echo json_encode($isLoggedIn); ?>;
+
+  function handleBooking(flightId) {
+    if (!isLoggedIn) {
+      Swal.fire({
+        icon: "warning",
+        title: "Please Login First",
+        text: "You need to login before reserving a plane.",
+        confirmButtonText: "Go to Login / Register",
+        confirmButtonColor: "#3085d6"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "pages/auth.php";  // 👉 your login/register page
+        }
+      });
+    } else {
+      // If logged in → proceed to booking
+      window.location.href = "booking.php?flight_id=" + flightId;
+    }
+  }
+</script>
+
 </body>
 </html>

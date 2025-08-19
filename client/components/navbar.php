@@ -17,9 +17,9 @@
 
     <!-- User Section -->
     <div class="hidden md:flex items-center space-x-4">
-      <?php if (isset($_SESSION['username'])): ?>
+      <?php if (isset($_SESSION['name'])): ?>
         <span class="font-semibold text-teal-600">
-          <?= htmlspecialchars($_SESSION['username']); ?>
+          <?= htmlspecialchars($_SESSION['name']); ?>
         </span>
         <a href="pages/logout.php" class="hover:text-red-600 transition">
           Logout
