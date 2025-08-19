@@ -8,7 +8,7 @@
     </div>  
 
     <ul class="hidden md:flex space-x-6">
-      <li><a href="index.php">Home</a></li>
+      <li><a href="../index.php">Home</a></li>
       <li><a href="#">About</a></li>
       <li><a href="#">Offers</a></li>
       <li><a href="#">Tickets</a></li>
