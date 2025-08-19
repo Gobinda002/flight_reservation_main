@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../../db.php';
+require_once '../../db.php';
 
 $sql = "SELECT f.*, a.airline_name
         FROM flights f

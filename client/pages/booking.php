@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../../../db.php';
-include '../components/navbar.php'; // ✅ Added navbar
+require_once '../../db.php';
+include '../components/navbar.php'; 
 
 // Redirect if flight_id not set
 if (!isset($_GET['flight_id'])) {

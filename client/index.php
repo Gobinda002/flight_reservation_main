@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../db.php';
+require_once '../db.php';
 ?>
 
 <!DOCTYPE html>
@@ -108,63 +108,83 @@ require_once '../../db.php';
     </div>
   </section>
 
-  <script>
-    // Toggle functionality for One Way / Two Way buttons
-    const oneWayBtn = document.getElementById('oneWayBtn');
-    const twoWayBtn = document.getElementById('twoWayBtn');
-    const returnField = document.querySelector('input[name="return"]');
-    const returnLabel = returnField.previousElementSibling;
-    const flightForm = document.getElementById('flightSearchForm');
+<script>
+  const oneWayBtn = document.getElementById('oneWayBtn');
+  const twoWayBtn = document.getElementById('twoWayBtn');
+  const returnField = document.querySelector('input[name="return"]');
+  const returnLabel = returnField.previousElementSibling;
+  const departField = document.querySelector('input[name="depart"]');
+  const flightForm = document.getElementById('flightSearchForm');
 
-    // Initially hide return field for one-way trips
+  // Initially hide return field for one-way trips
+  returnField.style.display = 'none';
+  returnLabel.style.display = 'none';
+
+  oneWayBtn.addEventListener('click', function () {
+    oneWayBtn.style.backgroundColor = '#e97778';
+    twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+
     returnField.style.display = 'none';
     returnLabel.style.display = 'none';
+    returnField.removeAttribute('required');
+  });
 
-    oneWayBtn.addEventListener('click', function () {
-      // Activate One Way
-      oneWayBtn.style.backgroundColor = '#e97778';
-      twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+  twoWayBtn.addEventListener('click', function () {
+    twoWayBtn.style.backgroundColor = '#e97778';
+    oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
 
-      // Hide return field
-      returnField.style.display = 'none';
-      returnLabel.style.display = 'none';
+    returnField.style.display = 'block';
+    returnLabel.style.display = 'block';
+    returnField.setAttribute('required', 'required');
+  });
 
-      // Remove required attribute from return field
-      returnField.removeAttribute('required');
-    });
+  // Set minimum for departure date (today or later)
+  const today = new Date().toISOString().split("T")[0];
+  departField.setAttribute("min", today);
+  returnField.setAttribute("min", today);
 
-    twoWayBtn.addEventListener('click', function () {
-      // Activate Two Way
-      twoWayBtn.style.backgroundColor = '#e97778';
-      oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+  // Handle form submission
+  flightForm.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-      // Show return field
-      returnField.style.display = 'block';
-      returnLabel.style.display = 'block';
+    const departDate = new Date(departField.value);
+    const returnDate = new Date(returnField.value);
 
-      // Add required attribute to return field
-      returnField.setAttribute('required', 'required');
-    });
+    // Departure validation
+    if (!departField.value) {
+      alert("Please select a departure date.");
+      return;
+    }
+    if (departDate < new Date(today)) {
+      alert("Departure date cannot be in the past.");
+      return;
+    }
 
-    // Handle form submission
-    flightForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // Prevent default form submission
-
-      // Get form data
-      const formData = new FormData(flightForm);
-      const searchParams = new URLSearchParams();
-
-      // Add form data to URL parameters
-      for (let [key, value] of formData.entries()) {
-        if (value) { // Only add non-empty values
-          searchParams.append(key, value);
-        }
+    // Return validation if two way is active
+    if (returnField.required) {
+      if (!returnField.value) {
+        alert("Please select a return date.");
+        return;
       }
+      if (returnDate <= departDate) {
+        alert("Return date must be later than departure date.");
+        return;
+      }
+    }
 
-      // Redirect to result page with search parameters
-      window.location.href = `pages/result.php?${searchParams.toString()}`;
-    });
-  </script>
+    // Get form data
+    const formData = new FormData(flightForm);
+    const searchParams = new URLSearchParams();
+
+    for (let [key, value] of formData.entries()) {
+      if (value) searchParams.append(key, value);
+    }
+
+    // Redirect to result page
+    window.location.href = `pages/result.php?${searchParams.toString()}`;
+  });
+</script>
+
 
 </body>
 

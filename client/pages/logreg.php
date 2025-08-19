@@ -2,7 +2,7 @@
 session_start();
 
 // Include database connection
-require_once '../../../db.php';
+require_once '../../db.php';
 
 
 $errors = [];
