@@ -47,7 +47,7 @@ require_once '../db.php';
   </div>
 
   <!-- Search Section -->
-  <section class=" min-h-screen flex items-center justify-center px-4 md:px-0"
+  <section id="search-section" class=" min-h-screen flex items-center justify-center px-4 md:px-0"
     style="background: linear-gradient(180deg,#38BDF8 0%,#b08f4a 55%,#f9c15c 100%);">
     <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
       style="font-family: Georgia, serif; width: 100%;">
