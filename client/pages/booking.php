@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     confirmButtonColor: '#3085d6'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'my_bookings.php';
+                        window.location.href = 'mybooking.php';
                     } else {
                         window.location.href = '../index.php';
                     }
