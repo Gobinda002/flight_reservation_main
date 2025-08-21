@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </script>";
     } else {
         // Check available seats
-        $availablenofpassenger = $flight['total_nofpassenger'] - $flight['booked_nofpassenger'];
+        $availablenofpassenger = $flight['total_seats'] - $flight['booked_seats'];
         if ($nofpassenger_booked > $availablenofpassenger) {
             $errornofpassenger = true;
         } else {
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // 2. Assign the next available seats (greedy)
             $seatNumbers = [];
-            for ($i = 1; $i <= $flight['total_nofpassenger']; $i++) {
+            for ($i = 1; $i <= $flight['total_seats']; $i++) {
                 if (!in_array($i, $assignedSeats)) {
                     $seatNumbers[] = $i;
                     if (count($seatNumbers) == $nofpassenger_booked) break;
@@ -115,8 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
             if ($stmt->execute()) {
-                // Update booked nofpassenger in flights
-                $update = $conn->prepare("UPDATE flights SET booked_nofpassenger = booked_nofpassenger + ? WHERE flight_id = ?");
+                // Update booked seats in flights
+                $update = $conn->prepare("UPDATE flights SET booked_seats = booked_seats + ? WHERE flight_id = ?");
                 $update->bind_param("ii", $nofpassenger_booked, $flight_id);
                 $update->execute();
 
