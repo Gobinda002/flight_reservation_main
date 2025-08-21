@@ -10,6 +10,7 @@ require_once '../db.php';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fly High</title>
+  
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -44,7 +45,9 @@ require_once '../db.php';
       class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60rem] z-10" />
 
   </div>
-  </div>
+ 
+
+
 
   <!-- Search Section -->
   <section id="search-section" class=" min-h-screen flex items-center justify-center px-4 md:px-0"
@@ -108,82 +111,82 @@ require_once '../db.php';
     </div>
   </section>
 
-<script>
-  const oneWayBtn = document.getElementById('oneWayBtn');
-  const twoWayBtn = document.getElementById('twoWayBtn');
-  const returnField = document.querySelector('input[name="return"]');
-  const returnLabel = returnField.previousElementSibling;
-  const departField = document.querySelector('input[name="depart"]');
-  const flightForm = document.getElementById('flightSearchForm');
+  <script>
+    const oneWayBtn = document.getElementById('oneWayBtn');
+    const twoWayBtn = document.getElementById('twoWayBtn');
+    const returnField = document.querySelector('input[name="return"]');
+    const returnLabel = returnField.previousElementSibling;
+    const departField = document.querySelector('input[name="depart"]');
+    const flightForm = document.getElementById('flightSearchForm');
 
-  // Initially hide return field for one-way trips
-  returnField.style.display = 'none';
-  returnLabel.style.display = 'none';
-
-  oneWayBtn.addEventListener('click', function () {
-    oneWayBtn.style.backgroundColor = '#e97778';
-    twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
-
+    // Initially hide return field for one-way trips
     returnField.style.display = 'none';
     returnLabel.style.display = 'none';
-    returnField.removeAttribute('required');
-  });
 
-  twoWayBtn.addEventListener('click', function () {
-    twoWayBtn.style.backgroundColor = '#e97778';
-    oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+    oneWayBtn.addEventListener('click', function () {
+      oneWayBtn.style.backgroundColor = '#e97778';
+      twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
 
-    returnField.style.display = 'block';
-    returnLabel.style.display = 'block';
-    returnField.setAttribute('required', 'required');
-  });
+      returnField.style.display = 'none';
+      returnLabel.style.display = 'none';
+      returnField.removeAttribute('required');
+    });
 
-  // Set minimum for departure date (today or later)
-  const today = new Date().toISOString().split("T")[0];
-  departField.setAttribute("min", today);
-  returnField.setAttribute("min", today);
+    twoWayBtn.addEventListener('click', function () {
+      twoWayBtn.style.backgroundColor = '#e97778';
+      oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
 
-  // Handle form submission
-  flightForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+      returnField.style.display = 'block';
+      returnLabel.style.display = 'block';
+      returnField.setAttribute('required', 'required');
+    });
 
-    const departDate = new Date(departField.value);
-    const returnDate = new Date(returnField.value);
+    // Set minimum for departure date (today or later)
+    const today = new Date().toISOString().split("T")[0];
+    departField.setAttribute("min", today);
+    returnField.setAttribute("min", today);
 
-    // Departure validation
-    if (!departField.value) {
-      alert("Please select a departure date.");
-      return;
-    }
-    if (departDate < new Date(today)) {
-      alert("Departure date cannot be in the past.");
-      return;
-    }
+    // Handle form submission
+    flightForm.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-    // Return validation if two way is active
-    if (returnField.required) {
-      if (!returnField.value) {
-        alert("Please select a return date.");
+      const departDate = new Date(departField.value);
+      const returnDate = new Date(returnField.value);
+
+      // Departure validation
+      if (!departField.value) {
+        alert("Please select a departure date.");
         return;
       }
-      if (returnDate <= departDate) {
-        alert("Return date must be later than departure date.");
+      if (departDate < new Date(today)) {
+        alert("Departure date cannot be in the past.");
         return;
       }
-    }
 
-    // Get form data
-    const formData = new FormData(flightForm);
-    const searchParams = new URLSearchParams();
+      // Return validation if two way is active
+      if (returnField.required) {
+        if (!returnField.value) {
+          alert("Please select a return date.");
+          return;
+        }
+        if (returnDate <= departDate) {
+          alert("Return date must be later than departure date.");
+          return;
+        }
+      }
 
-    for (let [key, value] of formData.entries()) {
-      if (value) searchParams.append(key, value);
-    }
+      // Get form data
+      const formData = new FormData(flightForm);
+      const searchParams = new URLSearchParams();
 
-    // Redirect to result page
-    window.location.href = `pages/result.php?${searchParams.toString()}`;
-  });
-</script>
+      for (let [key, value] of formData.entries()) {
+        if (value) searchParams.append(key, value);
+      }
+
+      // Redirect to result page
+      window.location.href = `pages/result.php?${searchParams.toString()}`;
+    });
+  </script>
 
 
 </body>
