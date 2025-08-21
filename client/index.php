@@ -13,6 +13,29 @@ require_once '../db.php';
   
 
   <script src="https://cdn.tailwindcss.com"></script>
+
+   <style>
+        /* This style is key to making the hero section fixed */
+        .fixed-hero {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1; /* Place it behind the search section initially */
+        }
+
+        /* This is the key for the parallax effect */
+        .parallax-plane {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60rem;
+            z-index: 20; /* Ensure it overlaps the search section */
+            will-change: transform; /* Performance optimization */
+        }
+    </style>
 </head>
 
 <body class="font-mono">
@@ -20,31 +43,24 @@ require_once '../db.php';
   <?php include 'components/navbar.php'; ?>
 
   <!-- Hero Section -->
-  <div class="min-h-screen bg-gradient-to-b from-yellow-400 via-orange-300 to-sky-400 relative overflow-hidden pt-28">
-    <div class="flex flex-col items-center text-center px-4 relative">
-
-      <h1 class="text-6xl md:text-7xl font-bold">
-        FLY IN STYLE
-      </h1>
-      <h2 class="text-6xl md:text-7xl font-bold mb-6">
-        ARRIVE IN COMFORT
-      </h2>
-
-      <div class="w-full flex justify-end pr-10 mt-32">
-        <div class="text-right max-w-xs">
-          <p class="text-sm font-semibold mb-4 ">Discover Exclusive Deals On Premium And First-Class Flights For Your
-            Ultimate Travel Experience.</p>
-          <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
-            Start Your Journey
-          </button>
+   <div class="fixed-hero bg-gradient-to-b from-yellow-400 via-orange-300 to-sky-400 overflow-hidden pt-28">
+        <div class="flex flex-col items-center text-center px-4 relative">
+            <h1 class="text-6xl md:text-7xl font-bold">FLY IN STYLE</h1>
+            <h2 class="text-6xl md:text-7xl font-bold mb-6">ARRIVE IN COMFORT</h2>
+            <div class="w-full flex justify-end pr-10 mt-32">
+                <div class="text-right max-w-xs">
+                    <p class="text-sm font-semibold mb-4">Discover Exclusive Deals On Premium And First-Class Flights For Your Ultimate Travel Experience.</p>
+                    <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
+                        Start Your Journey
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
-    <img src="assets/plane.png" alt="Airplane"
-      class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60rem] z-10" />
+    <img src="assets/plane.png" alt="Airplane" class="parallax-plane" />
 
-  </div>
+    <div class="h-screen"></div>
  
 
 
@@ -186,6 +202,15 @@ require_once '../db.php';
       // Redirect to result page
       window.location.href = `pages/result.php?${searchParams.toString()}`;
     });
+
+    window.addEventListener('scroll', function () {
+    const plane = document.querySelector('.parallax-plane');
+    const scrollPosition = window.scrollY;
+    // As you scroll down (positive scrollPosition), the translateY becomes negative,
+    // causing the plane to move up. The multiplier (e.g., -0.5) controls the speed.
+    plane.style.transform = `translate(-50%, -50%) translateY(${-scrollPosition * 0.5}px)`;
+});
+
   </script>
 
 
