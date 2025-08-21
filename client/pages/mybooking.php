@@ -33,32 +33,74 @@ $result = $stmt->get_result();
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 
 <div class="max-w-5xl mx-auto p-6">
-
-    <h1 class="text-2xl font-bold mb-6">My Bookings</h1>
+    <h1 class="text-3xl font-bold mb-8 text-center">My Flight Tickets</h1>
 
     <?php if ($result->num_rows > 0): ?>
-        <div class="space-y-6">
+        <div class="space-y-8">
         <?php while ($booking = $result->fetch_assoc()): ?>
-            <div class="bg-white p-6 rounded-lg shadow relative" id="ticket-<?= $booking['booking_id'] ?>">
-                <h2 class="text-lg font-bold mb-2"><?= htmlspecialchars(strtoupper($booking['airline_name'])) ?></h2>
-                <p><strong>Plane Number:</strong> <?= htmlspecialchars(strtoupper($booking['plane_number'])) ?></p>
-                <p><strong>From:</strong> <?= htmlspecialchars($booking['origin']) ?> <strong>To:</strong> <?= htmlspecialchars($booking['destination']) ?></p>
-                <p><strong>Departure:</strong> <?= date('j M, H:i', strtotime($booking['departure_time'])) ?></p>
-                <p><strong>Arrival:</strong> <?= date('j M, H:i', strtotime($booking['arrival_time'])) ?></p>
-                <p><strong>Seats Booked:</strong> <?= intval($booking['seats']) ?></p>
-                <p><strong>Total Paid:</strong> $<?= number_format(intval($booking['seats']) * floatval($booking['price']), 2) ?></p>
+            
+            <!-- Ticket -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden relative" id="ticket-<?= $booking['booking_id'] ?>">
+                <!-- Top Section -->
+                <div class="flex justify-between items-center px-6 py-4 bg-blue-600 text-white">
+                    <div>
+                        <h2 class="text-xl font-bold"><?= htmlspecialchars(strtoupper($booking['airline_name'])) ?></h2>
+                        <p class="text-sm">Plane: <?= htmlspecialchars($booking['plane_number']) ?></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm">Booking ID: #<?= $booking['booking_id'] ?></p>
+                        <p class="text-sm">Seats: <?= intval($booking['seats']) ?></p>
+                    </div>
+                </div>
 
-                <button onclick="downloadPDF(<?= $booking['booking_id'] ?>)" class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded">
-                    Download PDF
-                </button>
+                <!-- Middle Section -->
+                <div class="grid grid-cols-3 divide-x divide-dashed divide-gray-300">
+                    <div class="p-6 text-center">
+                        <p class="text-sm text-gray-500">From</p>
+                        <h3 class="text-2xl font-bold"><?= htmlspecialchars($booking['origin']) ?></h3>
+                        <p class="text-sm"><?= date('j M, H:i', strtotime($booking['departure_time'])) ?></p>
+                    </div>
+                    <div class="p-6 text-center flex flex-col justify-center">
+                        <p class="text-gray-400">✈️</p>
+                        <p class="text-sm text-gray-500">Duration</p>
+                        <p class="font-semibold">
+                            <?php
+                                $dep = strtotime($booking['departure_time']);
+                                $arr = strtotime($booking['arrival_time']);
+                                $duration = gmdate("H\h i\m", $arr - $dep);
+                                echo $duration;
+                            ?>
+                        </p>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-sm text-gray-500">To</p>
+                        <h3 class="text-2xl font-bold"><?= htmlspecialchars($booking['destination']) ?></h3>
+                        <p class="text-sm"><?= date('j M, H:i', strtotime($booking['arrival_time'])) ?></p>
+                    </div>
+                </div>
+
+                <!-- Bottom Section -->
+                <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
+                    <p class="text-sm text-gray-600">Total Paid: 
+                        <span class="font-bold text-lg text-green-600">
+                            $<?= number_format(intval($booking['seats']) * floatval($booking['price']), 2) ?>
+                        </span>
+                    </p>
+                    <button onclick="downloadPDF(<?= $booking['booking_id'] ?>)" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+                        Download PDF
+                    </button>
+                </div>
             </div>
+            <!-- End Ticket -->
+
         <?php endwhile; ?>
         </div>
     <?php else: ?>
-        <p class="text-gray-600 font-medium">You have no bookings yet.</p>
+        <p class="text-gray-600 font-medium text-center">You have no bookings yet.</p>
     <?php endif; ?>
 
 </div>
