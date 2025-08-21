@@ -7,43 +7,57 @@ require_once '../db.php';
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fly High</title>
-  
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fly High</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
-   <style>
-        /* This style is key to making the hero section fixed */
+    <style>
         .fixed-hero {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: -1; /* Place it behind the search section initially */
+            z-index: -1;
         }
 
-        /* This is the key for the parallax effect */
         .parallax-plane {
             position: absolute;
             top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 60rem;
-            z-index: 20; /* Ensure it overlaps the search section */
-            will-change: transform; /* Performance optimization */
+            z-index: 20;
+            will-change: transform;
+        }
+        
+        /* The vertical line and search section need absolute positioning for the dragging effect */
+        .vertical-line {
+            position: absolute;
+            left: 50.4%;
+            transform: translateX(-50%, -50%);
+            top: 45rem; 
+            width: 2px;
+            height: 295px;
+            background-color: #4a5568; 
+            z-index: 15;
+        }
+
+        #search-section {
+            position: absolute;
+            top: 100vh;
+            width: 100%;
+            z-index: 10;
         }
     </style>
 </head>
 
 <body class="font-mono">
+    <?php include 'components/navbar.php'; ?>
 
-  <?php include 'components/navbar.php'; ?>
-
-  <!-- Hero Section -->
-   <div class="fixed-hero bg-gradient-to-b from-yellow-400 via-orange-300 to-sky-400 overflow-hidden pt-28">
+    <div class="fixed-hero bg-gradient-to-b from-yellow-400 via-orange-300 to-sky-400 overflow-hidden pt-28">
         <div class="flex flex-col items-center text-center px-4 relative">
             <h1 class="text-6xl md:text-7xl font-bold">FLY IN STYLE</h1>
             <h2 class="text-6xl md:text-7xl font-bold mb-6">ARRIVE IN COMFORT</h2>
@@ -60,160 +74,162 @@ require_once '../db.php';
 
     <img src="assets/plane.png" alt="Airplane" class="parallax-plane" />
 
+    <div class="vertical-line"></div>
+
     <div class="h-screen"></div>
- 
 
+    <section id="search-section" class="min-h-screen flex items-center justify-center px-4 md:px-0"
+        style="background: linear-gradient(180deg, rgba(57,189,248,0.05) 0%, #38BDF8 10%, #b08f4a 55%, #f9c15c 100%);">
+        <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
+            style="font-family: Georgia, serif; width: 100%;">
+            <div class="flex justify-between mb-6">
+                <button type="button" id="oneWayBtn"
+                    class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[#e97778] transition-all duration-300 hover:bg-[#d86a6b] focus:outline-none focus:ring-2 focus:ring-[#e97778] focus:ring-opacity-50">
+                    One Way
+                </button>
+                <button type="button" id="twoWayBtn"
+                    class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[rgba(240,176,174,0.3)] transition-all duration-300 hover:bg-[rgba(240,176,174,0.5)] focus:outline-none focus:ring-2 focus:ring-[rgba(240,176,174,0.5)] focus:ring-opacity-50">
+                    Two Way
+                </button>
+            </div>
 
+            <form class="space-y-6" action="pages/result.html" method="GET" id="flightSearchForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-xs mb-1">From :</label>
+                        <input type="text" name="from" required placeholder="Origin"
+                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">To :</label>
+                        <input type="text" name="to" required placeholder="Destination"
+                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">Depart</label>
+                        <input type="date" name="depart" required
+                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
+                    </div>
+                    <div>
+                        <label class="block text-xs mb-1">Return</label>
+                        <input type="date" name="return"
+                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs mb-1">Passenger</label>
+                        <input type="number" name="passengers" min="1" value="<?= $selectedSeats ?>" required
+                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
+                    </div>
+                </div>
 
-  <!-- Search Section -->
-  <section id="search-section" class=" min-h-screen flex items-center justify-center px-4 md:px-0"
-   style="background: linear-gradient(180deg, rgba(57,189,248,0.05) 0%, #38BDF8 10%, #b08f4a 55%, #f9c15c 100%);">
-    <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
-      style="font-family: Georgia, serif; width: 100%;">
-      <!-- Mode toggle buttons -->
-      <div class="flex justify-between mb-6">
-        <button type="button" id="oneWayBtn"
-          class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[#e97778] transition-all duration-300 hover:bg-[#d86a6b] focus:outline-none focus:ring-2 focus:ring-[#e97778] focus:ring-opacity-50">
-          One Way
-        </button>
-        <button type="button" id="twoWayBtn"
-          class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[rgba(240,176,174,0.3)] transition-all duration-300 hover:bg-[rgba(240,176,174,0.5)] focus:outline-none focus:ring-2 focus:ring-[rgba(240,176,174,0.5)] focus:ring-opacity-50">
-          Two Way
-        </button>
-      </div>
-
-      <form class="space-y-6" action="pages/result.html" method="GET" id="flightSearchForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-          <div>
-            <label class="block text-xs mb-1">From :</label>
-            <input type="text" name="from" required placeholder="Origin"
-              class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">To :</label>
-            <input type="text" name="to" required placeholder="Destination"
-              class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">Depart</label>
-            <input type="date" name="depart" required
-              class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
-          </div>
-
-          <div>
-            <label class="block text-xs mb-1">Return</label>
-            <input type="date" name="return"
-              class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs mb-1">Passenger</label>
-            <input type="number" name="passengers" min="1" value="<?= $selectedSeats ?>" required
-              class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
-          </div>
-
+                <div class="mt-4">
+                    <button type="submit"
+                        class="bg-[#e97778] text-white px-10 py-3 rounded-lg text-xl tracking-wider font-semibold w-full md:w-auto">
+                        FIND FLIGHTS
+                    </button>
+                </div>
+            </form>
         </div>
+    </section>
 
-        <div class="mt-4">
-          <button type="submit"
-            class="bg-[#e97778] text-white px-10 py-3 rounded-lg text-xl tracking-wider font-semibold w-full md:w-auto">
-            FIND FLIGHTS
-          </button>
-        </div>
-      </form>
-    </div>
-  </section>
+    <script>
+        const oneWayBtn = document.getElementById('oneWayBtn');
+        const twoWayBtn = document.getElementById('twoWayBtn');
+        const returnField = document.querySelector('input[name="return"]');
+        const returnLabel = returnField.previousElementSibling;
+        const departField = document.querySelector('input[name="depart"]');
+        const flightForm = document.getElementById('flightSearchForm');
+        
+        const plane = document.querySelector('.parallax-plane');
+        const verticalLine = document.querySelector('.vertical-line');
+        const searchSection = document.getElementById('search-section');
 
-  <script>
-    const oneWayBtn = document.getElementById('oneWayBtn');
-    const twoWayBtn = document.getElementById('twoWayBtn');
-    const returnField = document.querySelector('input[name="return"]');
-    const returnLabel = returnField.previousElementSibling;
-    const departField = document.querySelector('input[name="depart"]');
-    const flightForm = document.getElementById('flightSearchForm');
+        // Store initial top positions to calculate the movement correctly
+        const initialSearchSectionTop = searchSection.offsetTop;
+        const initialVerticalLineTop = verticalLine.offsetTop;
 
-    // Initially hide return field for one-way trips
-    returnField.style.display = 'none';
-    returnLabel.style.display = 'none';
+        // Initially hide return field for one-way trips
+        returnField.style.display = 'none';
+        returnLabel.style.display = 'none';
 
-    oneWayBtn.addEventListener('click', function () {
-      oneWayBtn.style.backgroundColor = '#e97778';
-      twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+        oneWayBtn.addEventListener('click', function () {
+            oneWayBtn.style.backgroundColor = '#e97778';
+            twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
 
-      returnField.style.display = 'none';
-      returnLabel.style.display = 'none';
-      returnField.removeAttribute('required');
-    });
+            returnField.style.display = 'none';
+            returnLabel.style.display = 'none';
+            returnField.removeAttribute('required');
+        });
 
-    twoWayBtn.addEventListener('click', function () {
-      twoWayBtn.style.backgroundColor = '#e97778';
-      oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
+        twoWayBtn.addEventListener('click', function () {
+            twoWayBtn.style.backgroundColor = '#e97778';
+            oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
 
-      returnField.style.display = 'block';
-      returnLabel.style.display = 'block';
-      returnField.setAttribute('required', 'required');
-    });
+            returnField.style.display = 'block';
+            returnLabel.style.display = 'block';
+            returnField.setAttribute('required', 'required');
+        });
 
-    // Set minimum for departure date (today or later)
-    const today = new Date().toISOString().split("T")[0];
-    departField.setAttribute("min", today);
-    returnField.setAttribute("min", today);
+        // Set minimum for departure date (today or later)
+        const today = new Date().toISOString().split("T")[0];
+        departField.setAttribute("min", today);
+        returnField.setAttribute("min", today);
 
-    // Handle form submission
-    flightForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+        // Handle form submission
+        flightForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-      const departDate = new Date(departField.value);
-      const returnDate = new Date(returnField.value);
+            const departDate = new Date(departField.value);
+            const returnDate = new Date(returnField.value);
 
-      // Departure validation
-      if (!departField.value) {
-        alert("Please select a departure date.");
-        return;
-      }
-      if (departDate < new Date(today)) {
-        alert("Departure date cannot be in the past.");
-        return;
-      }
+            // Departure validation
+            if (!departField.value) {
+                alert("Please select a departure date.");
+                return;
+            }
+            if (departDate < new Date(today)) {
+                alert("Departure date cannot be in the past.");
+                return;
+            }
 
-      // Return validation if two way is active
-      if (returnField.required) {
-        if (!returnField.value) {
-          alert("Please select a return date.");
-          return;
-        }
-        if (returnDate <= departDate) {
-          alert("Return date must be later than departure date.");
-          return;
-        }
-      }
+            // Return validation if two way is active
+            if (returnField.required) {
+                if (!returnField.value) {
+                    alert("Please select a return date.");
+                    return;
+                }
+                if (returnDate <= departDate) {
+                    alert("Return date must be later than departure date.");
+                    return;
+                }
+            }
 
-      // Get form data
-      const formData = new FormData(flightForm);
-      const searchParams = new URLSearchParams();
+            // Get form data
+            const formData = new FormData(flightForm);
+            const searchParams = new URLSearchParams();
 
-      for (let [key, value] of formData.entries()) {
-        if (value) searchParams.append(key, value);
-      }
+            for (let [key, value] of formData.entries()) {
+                if (value) searchParams.append(key, value);
+            }
 
-      // Redirect to result page
-      window.location.href = `pages/result.php?${searchParams.toString()}`;
-    });
+            // Redirect to result page
+            window.location.href = `pages/result.php?${searchParams.toString()}`;
+        });
 
-    window.addEventListener('scroll', function () {
-    const plane = document.querySelector('.parallax-plane');
-    const scrollPosition = window.scrollY;
-    // As you scroll down (positive scrollPosition), the translateY becomes negative,
-    // causing the plane to move up. The multiplier (e.g., -0.5) controls the speed.
-    plane.style.transform = `translate(-50%, -50%) translateY(${-scrollPosition * 0.5}px)`;
-});
+        window.addEventListener('scroll', function () {
+            const scrollPosition = window.scrollY;
+            
+            // Calculate new positions based on scroll
+            const newY = -scrollPosition * 0.5;
 
-  </script>
-
-
+            // Apply the parallax effect to the plane
+            plane.style.transform = `translate(-50%, -50%) translateY(${newY}px)`;
+            
+            // Move the vertical line and search section with the same speed as the plane
+            verticalLine.style.top = `${initialVerticalLineTop + newY}px`;
+            searchSection.style.top = `${initialSearchSectionTop + newY}px`;
+        });
+    </script>
 </body>
 
 </html>
