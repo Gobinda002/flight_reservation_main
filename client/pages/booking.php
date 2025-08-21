@@ -23,9 +23,9 @@ if (!isset($_GET['flight_id'])) {
 
 $flight_id = intval($_GET['flight_id']);
 
-// ✅ Get selected seats from index.php (if provided)
-$selectedSeats = isset($_GET['seats']) ? intval($_GET['seats']) : 1;
-if ($selectedSeats < 1) $selectedSeats = 1;
+// ✅ Get selected nofpassenger from index.php (if provided)
+$selectednofpassenger = isset($_GET['nofpassenger']) ? intval($_GET['nofpassenger']) : 1;
+if ($selectednofpassenger < 1) $selectednofpassenger = 1;
 
 // Fetch flight details
 $stmt = $conn->prepare("SELECT f.*, a.airline_name, p.plane_number 
@@ -46,12 +46,13 @@ $flight = $result->fetch_assoc();
 
 // Handle booking submission
 $bookingSuccess = false;
-$errorSeats = false;
+$errornofpassenger = false;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $passenger_name = trim($_POST['passenger_name']);
     $passenger_email = trim($_POST['passenger_email']);
     $passenger_phone = trim($_POST['passenger_phone']);
-    $seats_booked = intval($_POST['seats_booked']);
+    $nofpassenger_booked = intval($_POST['nofpassenger_booked']);
 
     // Validate phone number (10 digits)
     if (!preg_match('/^\d{10}$/', $passenger_phone)) {
@@ -63,30 +64,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         </script>";
     } else {
-        // ✅ Check available seats
-        $availableSeats = $flight['total_seats'] - $flight['booked_seats'];
-        if ($seats_booked > $availableSeats) {
-            $errorSeats = true; // mark error for SweetAlert
+        // Check available seats
+        $availablenofpassenger = $flight['total_nofpassenger'] - $flight['booked_nofpassenger'];
+        if ($nofpassenger_booked > $availablenofpassenger) {
+            $errornofpassenger = true;
         } else {
-            // Insert booking
+            // --- Greedy Seat Assignment ---
+            // 1. Get already assigned seats for this flight
+            $stmtSeats = $conn->prepare("SELECT seatnumber FROM bookings WHERE flight_id = ?");
+            $stmtSeats->bind_param("i", $flight_id);
+            $stmtSeats->execute();
+            $resSeats = $stmtSeats->get_result();
+
+            $assignedSeats = [];
+            while ($row = $resSeats->fetch_assoc()) {
+                if (!empty($row['seatnumber'])) {
+                    $seats = explode(',', $row['seatnumber']);
+                    foreach ($seats as $s) {
+                        $assignedSeats[] = (int)$s;
+                    }
+                }
+            }
+
+            // 2. Assign the next available seats (greedy)
+            $seatNumbers = [];
+            for ($i = 1; $i <= $flight['total_nofpassenger']; $i++) {
+                if (!in_array($i, $assignedSeats)) {
+                    $seatNumbers[] = $i;
+                    if (count($seatNumbers) == $nofpassenger_booked) break;
+                }
+            }
+
+            // Convert seat numbers to comma-separated string
+            $seatNumbersStr = implode(',', $seatNumbers);
+
+            // --- Insert booking ---
             $stmt = $conn->prepare("INSERT INTO bookings 
-                (user_id, flight_id, passenger_name, passenger_email, passenger_phone, seats, booking_date) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW())");
+                (user_id, flight_id, passenger_name, passenger_email, passenger_phone, nofpassenger, seatnumber, booking_date) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
 
             $stmt->bind_param(
-                "iisssi",
+                "iisssis",
                 $user_id,
                 $flight_id,
                 $passenger_name,
                 $passenger_email,
                 $passenger_phone,
-                $seats_booked
+                $nofpassenger_booked,
+                $seatNumbersStr
             );
 
             if ($stmt->execute()) {
-                // Update booked seats in flights
-                $update = $conn->prepare("UPDATE flights SET booked_seats = booked_seats + ? WHERE flight_id = ?");
-                $update->bind_param("ii", $seats_booked, $flight_id);
+                // Update booked nofpassenger in flights
+                $update = $conn->prepare("UPDATE flights SET booked_nofpassenger = booked_nofpassenger + ? WHERE flight_id = ?");
+                $update->bind_param("ii", $nofpassenger_booked, $flight_id);
                 $update->execute();
 
                 $bookingSuccess = true;
@@ -94,6 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -144,8 +177,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         title="Phone number must be exactly 10 digits">
                 </div>
                 <div>
-                    <label class="block font-medium">Seats to Book</label>
-                    <input type="number" name="seats_booked" min="1" value="<?= $selectedSeats ?>" required
+                    <label class="block font-medium">nofpassenger to Book</label>
+                    <input type="number" name="nofpassenger_booked" min="1" value="<?= $selectednofpassenger ?>" required
                         class="w-full border rounded px-3 py-2">
                 </div>
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Confirm Booking</button>
@@ -170,12 +203,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </script>
         <?php endif; ?>
 
-        <?php if ($errorSeats): ?>
+        <?php if ($errornofpassenger): ?>
             <script>
                 Swal.fire({
                     icon: 'error',
-                    title: 'Not Enough Seats!',
-                    text: 'Sorry, only <?= $flight['total_seats'] - $flight['booked_seats'] ?> seats are available.',
+                    title: 'Not Enough nofpassenger!',
+                    text: 'Sorry, only <?= $flight['total_nofpassenger'] - $flight['booked_nofpassenger'] ?> nofpassenger are available.',
                     confirmButtonText: 'OK'
                 });
             </script>

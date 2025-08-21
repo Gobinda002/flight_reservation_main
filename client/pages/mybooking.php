@@ -33,9 +33,9 @@ $result = $stmt->get_result();
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-[#B3D7FF]">
 
-<div class="max-w-5xl mx-auto p-6">
+<div class="max-w-5xl mx-auto p-6 mt-12">
     <h1 class="text-3xl font-bold mb-8 text-center">My Flight Tickets</h1>
 
     <?php if ($result->num_rows > 0): ?>
@@ -52,7 +52,7 @@ $result = $stmt->get_result();
                     </div>
                     <div class="text-right">
                         <p class="text-sm">Booking ID: #<?= $booking['booking_id'] ?></p>
-                        <p class="text-sm">Seats: <?= intval($booking['seats']) ?></p>
+                        <p class="text-sm">nofpassenger: <?= intval($booking['nofpassenger']) ?></p>
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@ $result = $stmt->get_result();
                 <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
                     <p class="text-sm text-gray-600">Total Paid: 
                         <span class="font-bold text-lg text-green-600">
-                            $<?= number_format(intval($booking['seats']) * floatval($booking['price']), 2) ?>
+                            $<?= number_format(intval($booking['nofpassenger']) * floatval($booking['price']), 2) ?>
                         </span>
                     </p>
                     <button onclick="downloadPDF(<?= $booking['booking_id'] ?>)" 
