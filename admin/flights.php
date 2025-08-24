@@ -105,11 +105,11 @@ $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
             <tr id="row-<?= $flight['flight_id'] ?>" class="text-center">
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['plane_number'] ?: 'N/A') ?></td>
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['airline_name'] ?: 'N/A') ?></td>
-              <td class="border px-4 py-2"><?= htmlspecialchars($flight['origin']) ?></td>
+              <td class="border px-4 py-2 font-bold"><?= htmlspecialchars($flight['origin']) ?></td>
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['destination']) ?></td>
               <td class="border px-4 py-2"><?= $flight['departure_time'] ? date('Y-m-d H:i', strtotime($flight['departure_time'])) : 'N/A' ?></td>
               <td class="border px-4 py-2"><?= (int)$flight['total_seats'] ?></td>
-              <td class="border px-4 py-2"><?= (int)$flight['booked_seats'] ?></td>
+              <td class="border px-4 py-2 font-bold"><?= (int)$flight['booked_seats'] ?></td>
               <td class="border px-4 py-2 space-x-2">
                 <a href="edit_flight.php?id=<?= $flight['flight_id'] ?>" class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</a>
                 <button onclick="alert('Cancel Flight <?= $flight['flight_id'] ?>')" class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded">Cancel</button>
