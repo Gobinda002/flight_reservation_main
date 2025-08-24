@@ -83,14 +83,7 @@ require_once '../db.php';
         <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
             style="font-family: Georgia, serif; width: 100%;">
             <div class="flex justify-between mb-6">
-                <button type="button" id="oneWayBtn"
-                    class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[#e97778] transition-all duration-300 hover:bg-[#d86a6b] focus:outline-none focus:ring-2 focus:ring-[#e97778] focus:ring-opacity-50">
-                    One Way
-                </button>
-                <button type="button" id="twoWayBtn"
-                    class="px-8 py-2 rounded-full text-white text-sm font-medium tracking-wide bg-[rgba(240,176,174,0.3)] transition-all duration-300 hover:bg-[rgba(240,176,174,0.5)] focus:outline-none focus:ring-2 focus:ring-[rgba(240,176,174,0.5)] focus:ring-opacity-50">
-                    Two Way
-                </button>
+                <h2 class="text-2xl font-bold">Book Your Flight</h2>
             </div>
 
             <form class="space-y-6" action="pages/result.html" method="GET" id="flightSearchForm">
@@ -108,11 +101,6 @@ require_once '../db.php';
                     <div>
                         <label class="block text-xs mb-1">Depart</label>
                         <input type="date" name="depart" required
-                            class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
-                    </div>
-                    <div>
-                        <label class="block text-xs mb-1">Return</label>
-                        <input type="date" name="return"
                             class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
                     </div>
                     <div class="md:col-span-2">
@@ -133,43 +121,7 @@ require_once '../db.php';
     </section>
 
     <script>
-        const oneWayBtn = document.getElementById('oneWayBtn');
-        const twoWayBtn = document.getElementById('twoWayBtn');
-        const returnField = document.querySelector('input[name="return"]');
-        const returnLabel = returnField.previousElementSibling;
-        const departField = document.querySelector('input[name="depart"]');
-        const flightForm = document.getElementById('flightSearchForm');
-        
-        const plane = document.querySelector('.parallax-plane');
-        const verticalLine = document.querySelector('.vertical-line');
-        const searchSection = document.getElementById('search-section');
-
-        // Store initial top positions to calculate the movement correctly
-        const initialSearchSectionTop = searchSection.offsetTop;
-        const initialVerticalLineTop = verticalLine.offsetTop;
-
-        // Initially hide return field for one-way trips
-        returnField.style.display = 'none';
-        returnLabel.style.display = 'none';
-
-        oneWayBtn.addEventListener('click', function () {
-            oneWayBtn.style.backgroundColor = '#e97778';
-            twoWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
-
-            returnField.style.display = 'none';
-            returnLabel.style.display = 'none';
-            returnField.removeAttribute('required');
-        });
-
-        twoWayBtn.addEventListener('click', function () {
-            twoWayBtn.style.backgroundColor = '#e97778';
-            oneWayBtn.style.backgroundColor = 'rgba(240,176,174,0.3)';
-
-            returnField.style.display = 'block';
-            returnLabel.style.display = 'block';
-            returnField.setAttribute('required', 'required');
-        });
-
+       
         // Set minimum for departure date (today or later)
         const today = new Date().toISOString().split("T")[0];
         departField.setAttribute("min", today);
