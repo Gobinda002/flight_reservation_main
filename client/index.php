@@ -82,9 +82,11 @@ require_once '../db.php';
         style="background: linear-gradient(180deg, rgba(57,189,248,0.05) 0%, #38BDF8 10%, #b08f4a 55%, #f9c15c 100%);">
         <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
             style="font-family: Georgia, serif; width: 100%;">
-            <div class="flex justify-between mb-6">
-                <h2 class="text-2xl font-bold">Book Your Flight</h2>
-            </div>
+            <div class="flex justify-center mb-6">
+            <span class="px-8 py-2 rounded-full text-blue text-xl font-semibold ">
+                Book Your Flight
+            </span>
+        </div>
 
             <form class="space-y-6" action="pages/result.html" method="GET" id="flightSearchForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -121,66 +123,57 @@ require_once '../db.php';
     </section>
 
     <script>
-       
-        // Set minimum for departure date (today or later)
-        const today = new Date().toISOString().split("T")[0];
-        departField.setAttribute("min", today);
-        returnField.setAttribute("min", today);
+       const departField = document.querySelector('input[name="depart"]');
+const flightForm = document.getElementById('flightSearchForm');
+const plane = document.querySelector('.parallax-plane');
+const verticalLine = document.querySelector('.vertical-line');
+const searchSection = document.getElementById('search-section');
 
-        // Handle form submission
-        flightForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+// Store initial positions
+const initialSearchSectionTop = searchSection.offsetTop;
+const initialVerticalLineTop = verticalLine.offsetTop;
 
-            const departDate = new Date(departField.value);
-            const returnDate = new Date(returnField.value);
+// Set minimum for departure date (today or later)
+const today = new Date().toISOString().split("T")[0];
+departField.setAttribute("min", today);
 
-            // Departure validation
-            if (!departField.value) {
-                alert("Please select a departure date.");
-                return;
-            }
-            if (departDate < new Date(today)) {
-                alert("Departure date cannot be in the past.");
-                return;
-            }
+// Handle form submission
+flightForm.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-            // Return validation if two way is active
-            if (returnField.required) {
-                if (!returnField.value) {
-                    alert("Please select a return date.");
-                    return;
-                }
-                if (returnDate <= departDate) {
-                    alert("Return date must be later than departure date.");
-                    return;
-                }
-            }
+    const departDate = new Date(departField.value);
 
-            // Get form data
-            const formData = new FormData(flightForm);
-            const searchParams = new URLSearchParams();
+    if (!departField.value) {
+        alert("Please select a departure date.");
+        return;
+    }
+    if (departDate < new Date(today)) {
+        alert("Departure date cannot be in the past.");
+        return;
+    }
 
-            for (let [key, value] of formData.entries()) {
-                if (value) searchParams.append(key, value);
-            }
+    // Collect form data
+    const formData = new FormData(flightForm);
+    const searchParams = new URLSearchParams();
 
-            // Redirect to result page
-            window.location.href = `pages/result.php?${searchParams.toString()}`;
-        });
+    for (let [key, value] of formData.entries()) {
+        if (value) searchParams.append(key, value);
+    }
 
-        window.addEventListener('scroll', function () {
-            const scrollPosition = window.scrollY;
-            
-            // Calculate new positions based on scroll
-            const newY = -scrollPosition * 0.5;
+    // Redirect to result page
+    window.location.href = `pages/result.php?${searchParams.toString()}`;
+});
 
-            // Apply the parallax effect to the plane
-            plane.style.transform = `translate(-50%, -50%) translateY(${newY}px)`;
-            
-            // Move the vertical line and search section with the same speed as the plane
-            verticalLine.style.top = `${initialVerticalLineTop + newY}px`;
-            searchSection.style.top = `${initialSearchSectionTop + newY}px`;
-        });
+// Parallax effect
+window.addEventListener('scroll', function () {
+    const scrollPosition = window.scrollY;
+    const newY = -scrollPosition * 0.5;
+
+    plane.style.transform = `translate(-50%, -50%) translateY(${newY}px)`;
+    verticalLine.style.top = `${initialVerticalLineTop + newY}px`;
+    searchSection.style.top = `${initialSearchSectionTop + newY}px`;
+});
+
     </script>
 </body>
 
