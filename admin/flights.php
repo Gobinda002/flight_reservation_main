@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php';
+require '../db.php';
 
 // Default sort
 $sort = $_GET['sort'] ?? 'oldest';
@@ -23,16 +23,41 @@ $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Flights</title>
+  <title>Flights</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100">
 
-  <div class="max-w-6xl mx-auto bg-white p-6 shadow-md rounded-lg">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Flights</h1>
+  <!-- ====== NAVBAR ====== -->
+  <div class="navbar bg-blue-500 text-white p-4 md:px-8 flex justify-between items-center flex-wrap gap-4 shadow-md">
+      <div class="navbar-brand text-xl md:text-2xl font-bold">FlyHigh</div>
+      
+      <div class="navbar-menu flex gap-4 md:gap-6 flex-grow justify-start ml-0 md:ml-8 flex-wrap">
+          <a href="dashboard.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='dashboard.php' ? 'underline' : '' ?>">Dashboard</a>
+          <a href="add_flight.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='add_flight.php' ? 'underline' : '' ?>">Create Flight</a>
+          <a href="flights.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='flights.php' ? 'underline' : '' ?>">Flights</a>
+          <a href="airlines.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='airlines.php' ? 'underline' : '' ?>">Airlines</a>
+      </div>
 
-      <!--  Sort Dropdown -->
+      <div class="navbar-actions flex gap-4 items-center flex-wrap">
+          <a href="add_airlines.php" 
+             class="navbar-action-button bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 whitespace-nowrap">
+              <i class="fas fa-plus text-sm"></i> Airlines/Planes
+          </a>
+          <a href="admin.php" 
+             class="navbar-action-button bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 whitespace-nowrap">
+              <i class="fas fa-user-shield text-sm"></i> Admin
+          </a>
+          <a href="logout.php" 
+             class="navbar-action-button bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 whitespace-nowrap">
+              <i class="fas fa-sign-out-alt text-sm"></i> Logout
+          </a>
+      </div>
+  </div>
+
+  <!-- ====== SORT DROPDOWN ====== -->
+  <div class="max-w-6xl mx-auto mt-6">
+    <div class="flex justify-end mb-3">
       <div class="relative inline-block text-left">
         <button onclick="toggleDropdown()" 
           class="bg-gray-200 hover:bg-gray-300 p-2 rounded-full">
@@ -49,19 +74,15 @@ $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
         <div id="sortDropdown" 
           class="hidden absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-20">
           <a href="?sort=latest" 
-             class="block px-4 py-2 hover:bg-gray-100 <?= $sort==='latest' ? 'font-bold text-blue-600' : '' ?>">
-             Latest
-          </a>
+             class="block px-4 py-2 hover:bg-gray-100 <?= $sort==='latest' ? 'font-bold text-blue-600' : '' ?>">Latest</a>
           <a href="?sort=oldest" 
-             class="block px-4 py-2 hover:bg-gray-100 <?= $sort==='oldest' ? 'font-bold text-blue-600' : '' ?>">
-             Oldest
-          </a>
+             class="block px-4 py-2 hover:bg-gray-100 <?= $sort==='oldest' ? 'font-bold text-blue-600' : '' ?>">Oldest</a>
         </div>
       </div>
     </div>
 
-    <!--  Flights Table -->
-    <table class="w-full border-collapse border border-gray-300">
+    <!-- ====== FLIGHTS TABLE ====== -->
+    <table class="w-full border-collapse border border-gray-300 bg-white shadow-md rounded-md">
       <thead>
         <tr class="bg-gray-200 text-center">
           <th class="border px-4 py-2">Plane No</th>
@@ -75,32 +96,25 @@ $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
         </tr>
       </thead>
       <tbody>
-        <?php if (empty($flights)): ?>
+        <?php if(empty($flights)): ?>
           <tr>
             <td colspan="8" class="text-center py-4">No flights found.</td>
           </tr>
         <?php else: ?>
-          <?php foreach ($flights as $flight): ?>
+          <?php foreach($flights as $flight): ?>
             <tr id="row-<?= $flight['flight_id'] ?>" class="text-center">
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['plane_number'] ?: 'N/A') ?></td>
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['airline_name'] ?: 'N/A') ?></td>
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['origin']) ?></td>
               <td class="border px-4 py-2"><?= htmlspecialchars($flight['destination']) ?></td>
-              <td class="border px-4 py-2">
-                <?= $flight['departure_time'] ? date('Y-m-d H:i', strtotime($flight['departure_time'])) : 'N/A' ?>
-              </td>
-              <td class="border px-4 py-2"><?= (int) $flight['total_seats'] ?></td>
-              <td class="border px-4 py-2"><?= (int) $flight['booked_seats'] ?></td>
+              <td class="border px-4 py-2"><?= $flight['departure_time'] ? date('Y-m-d H:i', strtotime($flight['departure_time'])) : 'N/A' ?></td>
+              <td class="border px-4 py-2"><?= (int)$flight['total_seats'] ?></td>
+              <td class="border px-4 py-2"><?= (int)$flight['booked_seats'] ?></td>
               <td class="border px-4 py-2 space-x-2">
-                <a href="edit_flight.php?id=<?= $flight['flight_id'] ?>"
-                   class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</a>
-
-                <button onclick="showCancelForm(<?= $flight['flight_id'] ?>)"
-                   class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded">Cancel</button>
-
-                <?php if (strtotime($flight['departure_time']) < time()): ?>
-                  <button onclick="deleteFlight(<?= $flight['flight_id'] ?>)"
-                     class="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded">Delete</button>
+                <a href="edit_flight.php?id=<?= $flight['flight_id'] ?>" class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</a>
+                <button onclick="alert('Cancel Flight <?= $flight['flight_id'] ?>')" class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded">Cancel</button>
+                <?php if(strtotime($flight['departure_time']) < time()): ?>
+                  <button onclick="alert('Delete Flight <?= $flight['flight_id'] ?>')" class="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded">Delete</button>
                 <?php endif; ?>
               </td>
             </tr>
@@ -112,23 +126,13 @@ $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
   <script>
     function toggleDropdown() {
-      document.getElementById("sortDropdown").classList.toggle("hidden");
+      document.getElementById('sortDropdown').classList.toggle('hidden');
     }
 
     // Close dropdown if clicked outside
     window.onclick = function(event) {
       if (!event.target.closest('#sortDropdown') && !event.target.closest('button')) {
-        document.getElementById("sortDropdown").classList.add("hidden");
-      }
-    }
-
-    function showCancelForm(flightId) {
-      alert("Cancel form for Flight ID: " + flightId);
-    }
-
-    function deleteFlight(flightId) {
-      if (confirm("Are you sure you want to delete this flight?")) {
-        alert("Deleting flight " + flightId);
+        document.getElementById('sortDropdown').classList.add('hidden');
       }
     }
   </script>
