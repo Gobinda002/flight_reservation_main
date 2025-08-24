@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 21, 2025 at 07:23 PM
+-- Generation Time: Aug 24, 2025 at 09:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -119,7 +119,8 @@ CREATE TABLE `flights` (
 
 INSERT INTO `flights` (`flight_id`, `airline_id`, `plane_id`, `origin`, `destination`, `departure_time`, `arrival_time`, `total_seats`, `price`, `booked_seats`) VALUES
 (25, 15, 21, 'pokhara', 'kathmandu', '2025-08-23 09:49:00', '2025-08-23 09:51:00', 20, 1000, 4),
-(26, 14, 19, 'kathmandu', 'pokhara', '2025-08-26 21:46:00', '2025-08-26 21:49:00', 30, 2000, 0);
+(26, 14, 19, 'kathmandu', 'pokhara', '2025-08-26 21:46:00', '2025-08-26 21:49:00', 30, 2000, 0),
+(27, 14, 19, 'ktm', 'pkghr', '2025-08-24 21:59:00', '2025-08-24 22:59:00', 30, 30003, 0);
 
 -- --------------------------------------------------------
 
@@ -148,7 +149,6 @@ INSERT INTO `planes` (`plane_id`, `airline_id`, `plane_number`, `capacity`, `add
 (8, 4, 'asfq32', 32, 6),
 (14, 2, 'f4eewf', 234, 6),
 (15, 2, '23rasd', 32, 6),
-(16, 13, 'ba2233', 20, 6),
 (17, 13, 'ba234e', 30, 6),
 (18, 14, 'ha2212', 20, 6),
 (19, 14, 'ha3d32', 50, 6),
@@ -256,7 +256,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `flights`
 --
 ALTER TABLE `flights`
-  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `planes`
