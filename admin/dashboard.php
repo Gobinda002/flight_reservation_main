@@ -74,7 +74,7 @@ if ($result) {
             <a href="#" class="text-white hover:text-white font-medium text-base relative active">Dashboard</a>
             <a href="add_flight.php" class="text-white hover:text-white font-medium text-base relative">Create Flight</a>
             <a href="flights.php" class="text-white hover:text-white font-medium text-base relative">Flights</a>
-            <a href="#" class="text-white hover:text-white font-medium text-base relative">Airlines</a>
+            <a href="listairline.php" class="text-white hover:text-white font-medium text-base relative">Airlines</a>
         </div>
         <div class="navbar-actions flex gap-4 items-center flex-wrap">
             <a href="add_airlines.php" class="navbar-action-button bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 whitespace-nowrap">
