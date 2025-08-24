@@ -7,8 +7,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-// Fetch flights from database
-$sql = "SELECT * FROM flights ORDER BY departure_time ASC";
+// Fetch counts for summary cards
+$totalAirlines = $conn->query("SELECT COUNT(*) as cnt FROM airlines")->fetch_assoc()['cnt'];
+$totalPlanes = $conn->query("SELECT COUNT(*) as cnt FROM planes")->fetch_assoc()['cnt'];
+$totalFlights = $conn->query("SELECT COUNT(*) as cnt FROM flights")->fetch_assoc()['cnt'];
+$totalBookings = $conn->query("SELECT COUNT(*) as cnt FROM bookings")->fetch_assoc()['cnt'];
+
+// Fetch today's flights only
+$today = date('Y-m-d'); // YYYY-MM-DD
+$sql = "SELECT f.*, a.airline_name 
+        FROM flights f 
+        LEFT JOIN airlines a ON f.airline_id = a.airline_id 
+        WHERE DATE(f.departure_time) = '$today'
+        ORDER BY f.departure_time ASC";
 $result = $conn->query($sql);
 
 $flights = [];
@@ -43,31 +54,11 @@ if ($result) {
         }
         .navbar-menu a:hover::after,
         .navbar-menu a.active::after { width: 100%; }
-        .actions-menu .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 100px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            right: 0;
-            border-radius: 8px;
-            overflow: hidden;
-            top: 100%;
-        }
-        .actions-menu:hover .dropdown-content { display: block; }
-        .dropdown-content a {
-            color: #333;
-            padding: 10px 15px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-        }
-        .dropdown-content a:hover { background-color: #E0E0E0; }
         .card-icon-faded { color: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body class="bg-gray-200 flex flex-col min-h-screen">
+    <!-- Navbar -->
     <div class="navbar bg-blue-500 text-white p-4 md:px-8 flex justify-between items-center flex-wrap gap-4 shadow-md">
         <div class="navbar-brand text-xl md:text-2xl font-bold">FlyHigh</div>
         <div class="navbar-menu flex gap-4 md:gap-6 flex-grow justify-start ml-0 md:ml-8 flex-wrap">
@@ -89,75 +80,64 @@ if ($result) {
         </div>
     </div>
 
+    <!-- Summary Cards -->
     <div class="main-content flex-grow p-6 max-w-7xl mx-auto w-full box-border">
-        <!-- Summary cards (static data here, replace with real data if you want) -->
         <div class="summary-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             <div class="card bg-blue-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
-                <i class="fas fa-users text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
+                <i class="fas fa-building text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
                 <div class="card-content z-20 relative">
-                    <div class="text-sm font-medium mb-1">Total Passengers</div>
-                    <div class="text-3xl font-bold">5</div>
+                    <div class="text-sm font-medium mb-1">Total Airlines</div>
+                    <div class="text-3xl font-bold"><?= $totalAirlines ?></div>
                 </div>
             </div>
-            
-            <div class="card bg-blue-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
-                <i class="fas fa-plane-departure text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
-                <div class="card-content z-20 relative">
-                    <div class="text-sm font-medium mb-1">Flights</div>
-                    <div class="text-3xl font-bold"><?= count($flights) ?></div>
-                </div>
-            </div>
-            <div class="card bg-blue-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
+            <div class="card bg-green-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
                 <i class="fas fa-plane text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
                 <div class="card-content z-20 relative">
-                    <div class="text-sm font-medium mb-1">Available Airlines</div>
-                    <div class="text-3xl font-bold">3</div>
+                    <div class="text-sm font-medium mb-1">Total Planes</div>
+                    <div class="text-3xl font-bold"><?= $totalPlanes ?></div>
+                </div>
+            </div>
+            <div class="card bg-orange-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
+                <i class="fas fa-plane-departure text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
+                <div class="card-content z-20 relative">
+                    <div class="text-sm font-medium mb-1">Total Flights</div>
+                    <div class="text-3xl font-bold"><?= $totalFlights ?></div>
+                </div>
+            </div>
+            <div class="card bg-purple-400 text-white p-5 rounded-lg flex flex-col items-center text-center shadow-md relative overflow-hidden justify-center min-h-[120px]">
+                <i class="fas fa-users text-4xl mb-2 absolute top-4 left-5 card-icon-faded z-10"></i>
+                <div class="card-content z-20 relative">
+                    <div class="text-sm font-medium mb-1">Total Bookings</div>
+                    <div class="text-3xl font-bold"><?= $totalBookings ?></div>
                 </div>
             </div>
         </div>
 
+        <!-- Today's Flights Table -->
         <div class="flights-section bg-white p-6 rounded-lg shadow-md">
-            <div class="flights-header flex justify-between items-center mb-5 flex-wrap gap-4">
-                <h3 class="text-xl font-bold text-gray-800 m-0">Today's Flights</h3>
-                <button class="filter-button bg-blue-500 hover:bg-blue-600 text-white border-none py-2 px-3 rounded-lg cursor-pointer text-sm transition">
-                    <i class="fas fa-filter"></i>
-                </button>
-            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-5">Today's Flights</h3>
             <div class="flights-table-container overflow-x-auto">
                 <table class="flights-table w-full border-collapse text-sm">
                     <thead>
                         <tr>
                             <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">#</th>
                             <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">Departure</th>
+                            <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">Origin</th>
                             <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">Destination</th>
-                            <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">Source</th>
                             <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap">Airlines</th>
-                            <th class="p-3 text-left bg-blue-500 text-white font-semibold uppercase whitespace-nowrap"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (count($flights) === 0): ?>
-                        <tr><td colspan="7" class="p-3 text-center text-gray-700">No flights found.</td></tr>
+                            <tr><td colspan="5" class="p-3 text-center text-gray-700">No flights today.</td></tr>
                         <?php else: ?>
                             <?php foreach ($flights as $index => $flight): ?>
                                 <tr class="border-b border-gray-300 last:border-b-0">
                                     <td class="p-3 text-gray-700 whitespace-nowrap"><?= $index + 1 ?></td>
-                                    
                                     <td class="p-3 text-gray-700 whitespace-nowrap"><?= htmlspecialchars($flight['departure_time']) ?></td>
+                                    <td class="p-3 text-gray-700 whitespace-nowrap"><?= htmlspecialchars($flight['origin']) ?></td>
                                     <td class="p-3 text-gray-700 whitespace-nowrap"><?= htmlspecialchars($flight['destination']) ?></td>
-                                    <td class="p-3 text-gray-700 whitespace-nowrap"><?= htmlspecialchars($flight['airline_id']) ?></td>
-                                    <td class="p-3 text-gray-700 whitespace-nowrap">
-                                        <div class="actions-menu relative inline-block">
-                                            <button class="actions-button bg-none border-none text-xl cursor-pointer text-gray-700">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <div class="dropdown-content absolute bg-white min-w-[100px] shadow-md z-10 right-0 rounded-lg overflow-hidden hidden">
-                                                <a href="view_flight.php?id=<?= $flight['flight_id'] ?>" class="block text-gray-800 p-2 text-sm hover:bg-gray-100">View</a>
-                                                <a href="edit_flight.php?id=<?= $flight['flight_id'] ?>" class="block text-gray-800 p-2 text-sm hover:bg-gray-100">Edit</a>
-                                                <a href="delete_flight.php?id=<?= $flight['flight_id'] ?>" class="block text-gray-800 p-2 text-sm hover:bg-gray-100" onclick="return confirm('Are you sure you want to delete this flight?')">Delete</a>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td class="p-3 text-gray-700 whitespace-nowrap"><?= htmlspecialchars($flight['airline_name']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -166,27 +146,5 @@ if ($result) {
             </div>
         </div>
     </div>
-
-    <script>
-        // Toggle dropdown on click, hide on outside click
-        document.querySelectorAll('.actions-button').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.preventDefault();
-                const dropdown = btn.nextElementSibling;
-                if (!dropdown) return;
-
-                const isVisible = dropdown.style.display === 'block';
-                document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
-                dropdown.style.display = isVisible ? 'none' : 'block';
-            });
-        });
-
-        // Close dropdown if clicked outside
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.actions-menu')) {
-                document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
-            }
-        });
-    </script>
 </body>
 </html>
