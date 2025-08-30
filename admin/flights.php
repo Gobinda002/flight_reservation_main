@@ -4,19 +4,41 @@ require '../db.php';
 
 // Default sort
 $sort = $_GET['sort'] ?? 'oldest';
-$sortOrder = ($sort === 'latest') ? "DESC" : "ASC";
+$sortOrder = ($sort === 'latest') ? 'desc' : 'asc';
 
-// Fetch flights
+// Fetch flights (without ORDER BY!)
 $sql = "SELECT f.flight_id, f.plane_id, f.airline_id, f.origin, f.destination, 
                f.departure_time, f.arrival_time, f.total_seats, f.booked_seats, 
                a.airline_name, p.plane_number
         FROM flights f
         LEFT JOIN airlines a ON f.airline_id = a.airline_id
-        LEFT JOIN planes p ON f.plane_id = p.plane_id
-        ORDER BY f.departure_time $sortOrder";
+        LEFT JOIN planes p ON f.plane_id = p.plane_id";
 
 $result = $conn->query($sql);
 $flights = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+
+/* ===== Bubble Sort Function ===== */
+function bubbleSortFlights($flights, $key, $order = 'asc')
+{
+    $n = count($flights);
+    for ($i = 0; $i < $n - 1; $i++) {
+        for ($j = 0; $j < $n - $i - 1; $j++) {
+            $val1 = strtotime($flights[$j][$key]);
+            $val2 = strtotime($flights[$j + 1][$key]);
+
+            if (($order === 'asc' && $val1 > $val2) ||
+                ($order === 'desc' && $val1 < $val2)) {
+                $tmp = $flights[$j];
+                $flights[$j] = $flights[$j + 1];
+                $flights[$j + 1] = $tmp;
+            }
+        }
+    }
+    return $flights;
+}
+
+// Apply Bubble Sort on departure_time
+$flights = bubbleSortFlights($flights, 'departure_time', $sortOrder);
 ?>
 
 <!DOCTYPE html>

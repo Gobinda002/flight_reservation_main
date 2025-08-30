@@ -1,6 +1,23 @@
 <?php
 session_start();
 require_once '../db.php';
+
+// Fetch unique origins and destinations from DB for hints
+$origins = [];
+$destinations = [];
+
+$sql = "SELECT DISTINCT origin, destination FROM flights";
+$result = $conn->query($sql);
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        if (!in_array($row['origin'], $origins)) {
+            $origins[] = $row['origin'];
+        }
+        if (!in_array($row['destination'], $destinations)) {
+            $destinations[] = $row['destination'];
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,16 +49,15 @@ require_once '../db.php';
             z-index: 20;
             will-change: transform;
         }
-        
-        /* The vertical line and search section need absolute positioning for the dragging effect */
+
         .vertical-line {
             position: absolute;
             left: 50.4%;
             transform: translateX(-50%, -50%);
-            top: 45rem; 
+            top: 45rem;
             width: 2px;
             height: 295px;
-            background-color: #4a5568; 
+            background-color: #4a5568;
             z-index: 15;
         }
 
@@ -83,22 +99,32 @@ require_once '../db.php';
         <div class="max-w-3xl mx-auto bg-[#d9d9d9] rounded-md py-8 px-10 relative"
             style="font-family: Georgia, serif; width: 100%;">
             <div class="flex justify-center mb-6">
-            <span class="px-8 py-2 rounded-full text-blue text-xl font-semibold ">
-                Book Your Flight
-            </span>
-        </div>
+                <span class="px-8 py-2 rounded-full text-blue text-xl font-semibold ">
+                    Book Your Flight
+                </span>
+            </div>
 
-            <form class="space-y-6" action="pages/result.html" method="GET" id="flightSearchForm">
+            <form class="space-y-6" action="pages/result.php" method="GET" id="flightSearchForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label class="block text-xs mb-1">From :</label>
-                        <input type="text" name="from" required placeholder="Origin"
+                        <input list="origins" type="text" name="from" required placeholder="Origin"
                             class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
+                        <datalist id="origins">
+                            <?php foreach ($origins as $o): ?>
+                                <option value="<?= htmlspecialchars($o) ?>"></option>
+                            <?php endforeach; ?>
+                        </datalist>
                     </div>
                     <div>
                         <label class="block text-xs mb-1">To :</label>
-                        <input type="text" name="to" required placeholder="Destination"
+                        <input list="destinations" type="text" name="to" required placeholder="Destination"
                             class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1 px-2" />
+                        <datalist id="destinations">
+                            <?php foreach ($destinations as $d): ?>
+                                <option value="<?= htmlspecialchars($d) ?>"></option>
+                            <?php endforeach; ?>
+                        </datalist>
                     </div>
                     <div>
                         <label class="block text-xs mb-1">Depart</label>
@@ -107,7 +133,7 @@ require_once '../db.php';
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs mb-1">Passenger</label>
-                        <input type="number" name="passengers" min="1" value="<?= $selectedSeats ?>" required
+                        <input type="number" name="passengers" min="1" value="1" required
                             class="w-full bg-transparent border-0 border-b-2 border-black focus:outline-none text-lg pb-1" />
                     </div>
                 </div>
@@ -123,58 +149,43 @@ require_once '../db.php';
     </section>
 
     <script>
-       const departField = document.querySelector('input[name="depart"]');
-const flightForm = document.getElementById('flightSearchForm');
-const plane = document.querySelector('.parallax-plane');
-const verticalLine = document.querySelector('.vertical-line');
-const searchSection = document.getElementById('search-section');
+        const departField = document.querySelector('input[name="depart"]');
+        const flightForm = document.getElementById('flightSearchForm');
+        const plane = document.querySelector('.parallax-plane');
+        const verticalLine = document.querySelector('.vertical-line');
+        const searchSection = document.getElementById('search-section');
 
-// Store initial positions
-const initialSearchSectionTop = searchSection.offsetTop;
-const initialVerticalLineTop = verticalLine.offsetTop;
+        const initialSearchSectionTop = searchSection.offsetTop;
+        const initialVerticalLineTop = verticalLine.offsetTop;
 
-// Set minimum for departure date (today or later)
-const today = new Date().toISOString().split("T")[0];
-departField.setAttribute("min", today);
+        // Set min date
+        const today = new Date().toISOString().split("T")[0];
+        departField.setAttribute("min", today);
 
-// Handle form submission
-flightForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+        // Validate & redirect
+        flightForm.addEventListener('submit', function (e) {
+            const departDate = new Date(departField.value);
+            if (!departField.value) {
+                alert("Please select a departure date.");
+                e.preventDefault();
+                return;
+            }
+            if (departDate < new Date(today)) {
+                alert("Departure date cannot be in the past.");
+                e.preventDefault();
+                return;
+            }
+        });
 
-    const departDate = new Date(departField.value);
+        // Parallax effect
+        window.addEventListener('scroll', function () {
+            const scrollPosition = window.scrollY;
+            const newY = -scrollPosition * 0.5;
 
-    if (!departField.value) {
-        alert("Please select a departure date.");
-        return;
-    }
-    if (departDate < new Date(today)) {
-        alert("Departure date cannot be in the past.");
-        return;
-    }
-
-    // Collect form data
-    const formData = new FormData(flightForm);
-    const searchParams = new URLSearchParams();
-
-    for (let [key, value] of formData.entries()) {
-        if (value) searchParams.append(key, value);
-    }
-
-    // Redirect to result page
-    window.location.href = `pages/result.php?${searchParams.toString()}`;
-});
-
-// Parallax effect
-window.addEventListener('scroll', function () {
-    const scrollPosition = window.scrollY;
-    const newY = -scrollPosition * 0.5;
-
-    plane.style.transform = `translate(-50%, -50%) translateY(${newY}px)`;
-    verticalLine.style.top = `${initialVerticalLineTop + newY}px`;
-    searchSection.style.top = `${initialSearchSectionTop + newY}px`;
-});
-
+            plane.style.transform = `translate(-50%, -50%) translateY(${newY}px)`;
+            verticalLine.style.top = `${initialVerticalLineTop + newY}px`;
+            searchSection.style.top = `${initialSearchSectionTop + newY}px`;
+        });
     </script>
 </body>
-
 </html>
