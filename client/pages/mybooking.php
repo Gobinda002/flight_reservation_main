@@ -83,20 +83,15 @@ $result = $stmt->get_result();
                 </div>
 
                 <!-- Bottom Section -->
-                <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
+                <div class="px-6 py-4 bg-gray-50">
                     <p class="text-sm text-gray-600">Total Paid: 
                         <span class="font-bold text-lg text-green-600">
                             $<?= number_format(intval($booking['nofpassenger']) * floatval($booking['price']), 2) ?>
                         </span>
                     </p>
-                    <button onclick="downloadPDF(<?= $booking['booking_id'] ?>)" 
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
-                        Download PDF
-                    </button>
                 </div>
             </div>
             <!-- End Ticket -->
-
         <?php endwhile; ?>
         </div>
     <?php else: ?>
@@ -104,23 +99,6 @@ $result = $stmt->get_result();
     <?php endif; ?>
 
 </div>
-
-<script>
-function downloadPDF(bookingId) {
-    const { jsPDF } = window.jspdf;
-    const ticket = document.getElementById('ticket-' + bookingId);
-    const doc = new jsPDF();
-
-    doc.html(ticket, {
-        callback: function (doc) {
-            doc.save('ticket-' + bookingId + '.pdf');
-        },
-        x: 10,
-        y: 10,
-        width: 180,
-    });
-}
-</script>
 
 </body>
 </html>
