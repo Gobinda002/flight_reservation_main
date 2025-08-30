@@ -27,10 +27,14 @@ if ($result && $result->num_rows > 0) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Fly High</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         .fixed-hero {
             position: fixed;
             top: 0;
@@ -79,10 +83,14 @@ if ($result && $result->num_rows > 0) {
             <h2 class="text-6xl md:text-7xl font-bold mb-6">ARRIVE IN COMFORT</h2>
             <div class="w-full flex justify-end pr-10 mt-32">
                 <div class="text-right max-w-xs">
-                    <p class="text-sm font-semibold mb-4">Discover Exclusive Deals On Premium And First-Class Flights For Your Ultimate Travel Experience.</p>
-                    <button class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
+                    <p class="text-sm font-semibold mb-4">Discover Exclusive Deals On Premium And First-Class Flights
+                        For Your Ultimate Travel Experience.
+                    </p>
+                    <button
+                        class="bg-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition">
                         Start Your Journey
                     </button>
+
                 </div>
             </div>
         </div>
@@ -188,4 +196,5 @@ if ($result && $result->num_rows > 0) {
         });
     </script>
 </body>
+
 </html>
