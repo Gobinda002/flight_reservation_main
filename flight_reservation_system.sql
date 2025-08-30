@@ -1,12 +1,24 @@
-
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Aug 30, 2025 at 11:19 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
 
---
 -- Database: `flight_reservation_system`
+-- Create a new database
+CREATE DATABASE flight_reservation_system;
+
+-- Use the newly created database
+USE flight_reservation_system;
+
 --
 
 -- --------------------------------------------------------
@@ -40,6 +52,20 @@ CREATE TABLE `airlines` (
   `added_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `airlines`
+--
+
+INSERT INTO `airlines` (`airline_id`, `airline_name`, `added_by`) VALUES
+(12, 'Yeti Air', 6),
+(13, 'buddha Air', 6),
+(14, 'himalayan air', 6),
+(15, 'saurya air', 6),
+(16, 'asdf', 6);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -55,8 +81,20 @@ CREATE TABLE `bookings` (
   `booking_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Table structure for table `flights`
+--
+-- Dumping data for table `bookings`
+--
 
+INSERT INTO `bookings` (`booking_id`, `user_id`, `flight_id`, `passenger_name`, `passenger_email`, `passenger_phone`, `nofpassenger`, `seatnumber`, `booking_date`) VALUES
+(6, 1, 25, 'Apple', 'asd@gmail.com', '1232342342', 12, 0, '2025-08-21 21:32:49'),
+(7, 1, 25, 'Apple', 'asd@gmail.com', '1232342342', 12, 1, '2025-08-21 21:33:07'),
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `flights`
+--
 
 CREATE TABLE `flights` (
   `flight_id` int(11) NOT NULL,
@@ -72,6 +110,16 @@ CREATE TABLE `flights` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `flights`
+--
+
+INSERT INTO `flights` (`flight_id`, `airline_id`, `plane_id`, `origin`, `destination`, `departure_time`, `arrival_time`, `total_seats`, `price`, `booked_seats`) VALUES
+(29, 13, 17, 'pokhara', 'nepaljung', '2025-08-30 12:12:00', '2025-08-30 12:50:00', 30, 3000, 0),
+(30, 16, 25, 'asd', 'ad', '2025-08-30 17:36:00', '2025-08-30 23:39:00', 20, 2, 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `planes`
 --
 
@@ -83,6 +131,19 @@ CREATE TABLE `planes` (
   `added_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `planes`
+--
+
+INSERT INTO `planes` (`plane_id`, `airline_id`, `plane_number`, `capacity`, `added_by`) VALUES
+(1, 10, 'sdaf', 34, 6),
+(2, 2, 'asddrf', 234, 6),
+(3, 2, 'f3223', 234, 6),
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -99,7 +160,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `phone`) VALUES
-(1, 'apple', 'asd@gmail.com', '$2y$10$ABdFvbdmyJUh7zK0N1qgue/KW/K.scfH2J.88T.S45zsSiscY9/Ty', '');
+(1, 'apple', 'asd@gmail.com', '$2y$10$ABdFvbdmyJUh7zK0N1qgue/KW/K.scfH2J.88T.S45zsSiscY9/Ty', ''),
+(2, 'ram', 'asde@gmail.com', '$2y$10$90BPYS3wIno8.sdpZtP02OZ4wt/wLZcuZSsOgIw4uliF6zXw3dlfS', '');
 
 --
 -- Indexes for dumped tables
@@ -109,15 +171,13 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `phone`) VALUES
 -- Indexes for table `admin`
 --
 ALTER TABLE `admin`
-  ADD PRIMARY KEY (`admin_id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD PRIMARY KEY (`admin_id`);
 
 --
 -- Indexes for table `airlines`
 --
 ALTER TABLE `airlines`
   ADD PRIMARY KEY (`airline_id`),
-  ADD UNIQUE KEY `airline_name` (`airline_name`),
   ADD KEY `added_by` (`added_by`);
 
 --
@@ -142,8 +202,8 @@ ALTER TABLE `flights`
 ALTER TABLE `planes`
   ADD PRIMARY KEY (`plane_id`),
   ADD UNIQUE KEY `model` (`plane_number`),
-  ADD KEY `added_by` (`added_by`),
-  ADD KEY `airlines_fk` (`airline_id`);
+  ADD KEY `airlines_fk` (`airline_id`),
+  ADD KEY `addedby_fk` (`added_by`);
 
 --
 -- Indexes for table `users`
@@ -166,31 +226,31 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `airlines`
 --
 ALTER TABLE `airlines`
-  MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `airline_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `flights`
 --
 ALTER TABLE `flights`
-  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `flight_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `planes`
 --
 ALTER TABLE `planes`
-  MODIFY `plane_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `plane_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -220,6 +280,7 @@ ALTER TABLE `flights`
 -- Constraints for table `planes`
 --
 ALTER TABLE `planes`
+  ADD CONSTRAINT `addedby_fk` FOREIGN KEY (`added_by`) REFERENCES `admin` (`admin_id`),
   ADD CONSTRAINT `airlines_fk` FOREIGN KEY (`airline_id`) REFERENCES `airlines` (`airline_id`);
 COMMIT;
 

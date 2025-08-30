@@ -135,7 +135,6 @@ $flights = bubbleSortFlights($flights, 'departure_time', $sortOrder);
               <td class="border px-4 py-2 font-bold"><?= (int)$flight['booked_seats'] ?></td>
               <td class="border px-4 py-2 space-x-2">
                 <a href="edit_flight.php?id=<?= $flight['flight_id'] ?>" class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</a>
-                <button onclick="alert('Cancel Flight <?= $flight['flight_id'] ?>')" class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded">Cancel</button>
                 <?php if(strtotime($flight['departure_time']) < time()): ?>
                   <button onclick="alert('Delete Flight <?= $flight['flight_id'] ?>')" class="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded">Delete</button>
                 <?php endif; ?>
