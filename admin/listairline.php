@@ -61,7 +61,8 @@ $airlines = $conn->query($sql);
             <a href="dashboard.php" class="text-white hover:text-white font-medium text-base ">Dashboard</a>
             <a href="add_flight.php" class="text-white hover:text-white font-medium text-base ">Create Flight</a>
             <a href="flights.php" class="text-white hover:text-white font-medium text-base ">Flights</a>
-            <a href="#" class="text-white hover:text-white font-medium text-base ">Airlines</a>
+            <a href="listairline.php" class="text-white hover:text-white font-medium text-base ">Airlines</a>
+            <a href="seebookings.php" class="text-white hover:text-white font-medium text-base relative">See Bookings</a>
         </div>
         <div class="navbar-actions flex gap-4 items-center flex-wrap">
             <a href="add_airlines.php" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 whitespace-nowrap">

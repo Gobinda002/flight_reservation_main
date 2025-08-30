@@ -59,6 +59,7 @@ $flights = bubbleSortFlights($flights, 'departure_time', $sortOrder);
           <a href="add_flight.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='add_flight.php' ? 'underline' : '' ?>">Create Flight</a>
           <a href="flights.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='flights.php' ? 'underline' : '' ?>">Flights</a>
           <a href="listairline.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='airlines.php' ? 'underline' : '' ?>">Airlines</a>
+          <a href="seebookings.php" class="text-white hover:text-white font-medium text-base relative <?= basename($_SERVER['PHP_SELF'])=='seebookings.php' ? 'underline' : '' ?>">See Bookings</a>
       </div>
 
       <div class="navbar-actions flex gap-4 items-center flex-wrap">
