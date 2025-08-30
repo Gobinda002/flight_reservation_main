@@ -32,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: ../index.php");
         exit();
       } else {
-        $errors[] = "Invalid username or password.";
+        $errors[] = "The credentials provided are incorrect.";
       }
     } else {
-      $errors[] = "Invalid username or password.";
+      $errors[] = "The credentials provided are incorrect.";
     }
     $stmt->close();
     $showForm = 'login';
