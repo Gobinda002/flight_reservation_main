@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$plane_id || !$origin || !$destination || !$departure_time || !$arrival_time || $total_seats <= 0 || $price <= 0) {
         $error = "All fields are required, and seats/price must be positive.";
     } elseif (strtotime($arrival_time) <= strtotime($departure_time)) {
-        $error = "Arrival time must be later than departure time.";
+        $error = "Arrival time must be greater than departure time.";
     } else {
 
         // ✅ Fetch plane capacity
